@@ -1,14 +1,20 @@
+import type { CSSProperties } from "react";
+
 export function getCellPosition(index: number) {
-  if (index >= 0 && index <= 5) {
+  // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
+
+  const reversedIndex = index === 0 ? 0 : 52 - index; 
+
+  if (reversedIndex >= 0 && reversedIndex <= 5) {
     return {
       gridColumnStart: 7,
       gridColumnEnd: 8,
-      gridRowStart: 1 + index,
-      gridRowEnd: 2 + index,
+      gridRowStart: 1 + reversedIndex,
+      gridRowEnd: 2 + reversedIndex,
     };
   }
-  if (index >= 6 && index <= 10) {
-    const offset = index - 6;
+  if (reversedIndex >= 6 && reversedIndex <= 10) {
+    const offset = reversedIndex - 6;
 
     return {
       gridColumnStart: 6 - offset,
@@ -18,8 +24,8 @@ export function getCellPosition(index: number) {
     };
   }
 
-  if (index >= 11 && index <= 13) {
-    const offset = index - 12;
+  if (reversedIndex >= 11 && reversedIndex <= 13) {
+    const offset = reversedIndex - 12;
     return {
       gridColumnStart: 1,
       gridColumnEnd: 2,
@@ -28,8 +34,8 @@ export function getCellPosition(index: number) {
     };
   }
 
-  if (index >= 14 && index <= 18) {
-    const offset = index - 14;
+  if (reversedIndex >= 14 && reversedIndex <= 18) {
+    const offset = reversedIndex - 14;
     return {
       gridColumnStart: 2 + offset,
       gridColumnEnd: 3 + offset,
@@ -37,8 +43,8 @@ export function getCellPosition(index: number) {
       gridRowEnd: 10,
     };
   }
-  if (index >= 19 && index <= 23) {
-    const offset = index - 19;
+  if (reversedIndex >= 19 && reversedIndex <= 23) {
+    const offset = reversedIndex - 19;
     return {
       gridColumnStart: 7,
       gridColumnEnd: 8,
@@ -47,8 +53,8 @@ export function getCellPosition(index: number) {
     };
   }
 
-  if (index >= 24 && index <= 26) {
-    const offset = index - 25;
+  if (reversedIndex >= 24 && reversedIndex <= 26) {
+    const offset = reversedIndex - 25;
     return {
       gridColumnStart: 8 + offset,
       gridColumnEnd: 9 + offset,
@@ -56,8 +62,8 @@ export function getCellPosition(index: number) {
       gridRowEnd: 16,
     };
   }
-  if (index >= 27 && index <= 31) {
-    const offset = index - 27;
+  if (reversedIndex >= 27 && reversedIndex <= 31) {
+    const offset = reversedIndex - 27;
     return {
       gridColumnStart: 9,
       gridColumnEnd: 10,
@@ -65,8 +71,8 @@ export function getCellPosition(index: number) {
       gridRowEnd: 15 - offset,
     };
   }
-  if (index >= 28 && index <= 36) {
-    const offset = index - 28;
+  if (reversedIndex >= 32 && reversedIndex <= 36) {
+    const offset = reversedIndex - 28;
     return {
       gridColumnStart: 6 + offset,
       gridColumnEnd: 7 + offset,
@@ -75,8 +81,8 @@ export function getCellPosition(index: number) {
     };
   }
 
-  if (index >= 37 && index <= 39) {
-    const offset = index - 37;
+  if (reversedIndex >= 37 && reversedIndex <= 39) {
+    const offset = reversedIndex - 37;
     return {
       gridColumnStart: 15,
       gridColumnEnd: 16,
@@ -84,8 +90,8 @@ export function getCellPosition(index: number) {
       gridRowEnd: 10 - offset,
     };
   }
-  if (index >= 40 && index <= 44) {
-    const offset = index - 40;
+  if (reversedIndex >= 40 && reversedIndex <= 44) {
+    const offset = reversedIndex - 40;
     return {
       gridColumnStart: 14 - offset,
       gridColumnEnd: 15 - offset,
@@ -93,8 +99,8 @@ export function getCellPosition(index: number) {
       gridRowEnd: 8,
     };
   }
-  if (index >= 45 && index <= 50) {
-    const offset = index - 45;
+  if (reversedIndex >= 45 && reversedIndex <= 50) {
+    const offset = reversedIndex - 45;
     return {
       gridColumnStart: 9,
       gridColumnEnd: 10,
@@ -102,7 +108,7 @@ export function getCellPosition(index: number) {
       gridRowEnd: 7 - offset,
     };
   }
-  if (index == 51) {
+  if (reversedIndex == 51) {
     return {
       gridColumnStart: 8,
       gridColumnEnd: 9,
@@ -162,5 +168,39 @@ export function getHomeCellPosition(index: number) {
       backgroundColor: "yellow",
     };
   }
+}
 
+export function getInitialPosition(index: number) {
+  let style: CSSProperties = {
+    position: "absolute",
+    top: "1.25rem",
+    left: "1.25rem",
+  };
+
+  if ([1, 2, 5, 6].includes(index)) {
+    style = { ...style, gridRowStart: 2, gridRowEnd: 3 };
+  }
+  if ([3, 4, 7, 8].includes(index)) {
+    style = { ...style, gridRowStart: 4, gridRowEnd: 5 };
+  }
+  if ([9, 10, 13, 14].includes(index)) {
+    style = { ...style, gridRowStart: 11, gridRowEnd: 12 };
+  }
+  if ([11, 12, 15, 16].includes(index)) {
+    style = { ...style, gridRowStart: 13, gridRowEnd: 14 };
+  }
+  if ([1, 3, 9, 11].includes(index)) {
+    style = { ...style, gridColumnStart: 2, gridColumnEnd: 3 };
+  }
+  if ([2, 4, 10, 12].includes(index)) {
+    style = { ...style, gridColumnStart: 4, gridColumnEnd: 5 };
+  }
+  if ([5, 7, 13, 15].includes(index)) {
+    style = { ...style, gridColumnStart: 11, gridColumnEnd: 12 };
+  }
+  if ([6, 8, 14, 16].includes(index)) {
+    style = { ...style, gridColumnStart: 13, gridColumnEnd: 14 };
+  }
+
+  return style;
 }
