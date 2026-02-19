@@ -1,7 +1,6 @@
 import { getCellPosition, getHomeCellPosition } from "../utils/board";
 
 function Board({ children }: { children: React.ReactNode }) {
-
   const array = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
     21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
@@ -10,7 +9,6 @@ function Board({ children }: { children: React.ReactNode }) {
   const homeArray = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
   ];
-
 
   return (
     <div className="h-125">
@@ -50,7 +48,7 @@ function Board({ children }: { children: React.ReactNode }) {
         {homeArray.map((val, i) => {
           return (
             <div key={i} style={getHomeCellPosition(val)} className="border">
-              {val}
+              {/* {val} */}
             </div>
           );
         })}
@@ -71,14 +69,14 @@ function Board({ children }: { children: React.ReactNode }) {
               style={{ ...getCellPosition(val), backgroundColor: color }}
               className="border"
             >
-               {/* {val}  */}
+              {/* {val} */}
             </div>
           );
         })}
-        <div className="relative w-7 h-7  top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 ">
+        {/* <div className="relative w-7 h-7  top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 ">
           <div className="absolute inset-0 rounded-full bg-red-700 z-10"></div>
           {/* <div className="absolute -inset-1 rounded-full animate-spin border-2 border-yellow-400 border-dashed opacity-70 z-0"></div> */}
-        </div>
+        {/*        </div> */}
 
         {/* <div
           className="h-7 w-7 rounded-full top-0.5 left-1 bg-amber-400 absolute col-start-8 col-end-9 row-start-1 row-end-2 

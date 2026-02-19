@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 export function getCellPosition(index: number) {
   // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
 
-  const reversedIndex = index === 0 ? 0 : 52 - index; 
+  const reversedIndex = index === 0 ? 0 : 52 - index;
 
   if (reversedIndex >= 0 && reversedIndex <= 5) {
     return {
@@ -116,12 +116,15 @@ export function getCellPosition(index: number) {
       gridRowEnd: 2,
     };
   }
-  return {
-    gridColumnStart: 1,
-    gridColumnEnd: 2,
-    gridRowStart: 1,
-    gridRowEnd: 2,
-  };
+  // if (reversedIndex >= 52 && reversedIndex <= 56) {
+  //   return {
+  //     gridRowStart: 2 + reversedIndex - 52,
+  //     gridRowEnd: 3 + reversedIndex - 52,
+  //     gridColumnStart: 8,
+  //     gridColumnEnd: 9,
+  //     backgroundColor: "green",
+  //   };
+  // }
   // if (index >= 6 && index <= 12) {
   //   const offset = index - 6;
   //   return `border  col-start-${6 - offset} col-end-${8 - offset} row-start-${7} row-end-${8} `;

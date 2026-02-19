@@ -1,13 +1,19 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import DiceBox from "@3d-dice/dice-box";
 import Board from "../../components/Board";
-import { getCellPosition, getInitialPosition } from "../../utils/board";
+import {
+  getCellPosition,
+  getHomeCellPosition,
+  getInitialPosition,
+} from "../../utils/board";
 
 type piece = {
   position: number;
   isPlayable: boolean;
   isOnHome: boolean;
   isOnBoard: boolean;
+  hasGoneRound: boolean;
+  isInHomeStretch: boolean;
 };
 
 type player = {
@@ -60,24 +66,32 @@ const initialState: gameStateType = {
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 2,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 3,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 4,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
       ],
     },
@@ -92,24 +106,32 @@ const initialState: gameStateType = {
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 6,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 7,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 8,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
       ],
     },
@@ -123,24 +145,32 @@ const initialState: gameStateType = {
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 10,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 11,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 12,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
       ],
     },
@@ -154,24 +184,32 @@ const initialState: gameStateType = {
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 14,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 15,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
         {
           position: 16,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
+          hasGoneRound: false,
+          isInHomeStretch: false,
         },
       ],
     },
@@ -187,10 +225,71 @@ function getNextPlayer(currentPlayer: number, totalPlayers: number = 4) {
 }
 function getNextPosition(
   currentPosition: number,
+  playerIndex: number,
+  pieceIndex: number,
+  state: gameStateType,
   currentMoveNumber: number,
   totalPosition: number = 51,
 ) {
-  return (currentPosition + currentMoveNumber) % totalPosition;
+  if (
+    playerIndex === 0 &&
+    currentPosition + currentMoveNumber > 40 &&
+    state.players[playerIndex].pieces[pieceIndex].hasGoneRound == true
+  ) {
+    return ((currentPosition + currentMoveNumber) % 41) + 5;
+  }
+  if (
+    playerIndex === 1 &&
+    state.players[playerIndex].pieces[pieceIndex].hasGoneRound == true
+  ) {
+    const wrappedPosition = (currentMoveNumber + currentPosition) % 52;
+
+    if (wrappedPosition > 1) return wrappedPosition - 2;
+
+    return wrappedPosition;
+  }
+  if (
+    playerIndex === 2 &&
+    currentPosition + currentMoveNumber > 27 &&
+    state.players[playerIndex].pieces[pieceIndex].hasGoneRound == true
+  ) {
+    return ((currentPosition + currentMoveNumber) % 28) + 9;
+  }
+  if (
+    playerIndex === 3 &&
+    currentPosition + currentMoveNumber > 14 &&
+    currentPosition + currentMoveNumber < 20 &&
+    state.players[playerIndex].pieces[pieceIndex].hasGoneRound == true
+  ) {
+    return ((currentPosition + currentMoveNumber) % 15) + 15;
+  } else return (currentPosition + currentMoveNumber) % totalPosition;
+}
+
+function hasGoneRound(playerIndex: number, currentPosition: number): boolean {
+  console.log(playerIndex, currentPosition);
+  if (playerIndex == 0 && currentPosition < 40 && currentPosition > 16)
+    return true;
+  else if (playerIndex == 1 && currentPosition > 40) return true;
+  else if (playerIndex == 2 && currentPosition < 29 && currentPosition > 16)
+    return true;
+  else if (playerIndex == 3 && currentPosition > 27) return true;
+  else return false;
+}
+
+function isPieceReadyToGoHome(playerIndex: number, position: number): boolean {
+  if (playerIndex == 0 && position >= 5 && position <= 9) {
+    return true;
+  }
+  if (playerIndex == 1 && position >= 0 && position <= 4) {
+    return true;
+  }
+  if (playerIndex == 2 && position >= 10 && position <= 14) {
+    return true;
+  }
+  if (playerIndex == 3 && position >= 15 && position <= 19) {
+    return true;
+  }
+  return false;
 }
 
 function reducer(state: gameStateType, action: actionType) {
@@ -280,6 +379,7 @@ function reducer(state: gameStateType, action: actionType) {
               if (index !== action.payload.pieceIndex)
                 return {
                   ...piece,
+
                   isPlayable: hasPlayerFinishedPlaying ? false : true,
                 };
               // if (!state.currentMoveNumber) {
@@ -290,10 +390,26 @@ function reducer(state: gameStateType, action: actionType) {
               // }
               const newPosition = piece.isOnHome
                 ? getStartPosition(action.payload.playerIndex)
-                : getNextPosition(piece.position, state.currentMoveNumber!);
+                : getNextPosition(
+                    piece.position,
+                    action.payload.playerIndex,
+                    action.payload.pieceIndex,
+                    state,
+                    state.currentMoveNumber!,
+                  );
 
               return {
                 ...piece,
+                hasGoneRound:
+                  state.players[state.currentPlayer].pieces[
+                    action.payload.pieceIndex
+                  ].hasGoneRound ||
+                  hasGoneRound(
+                    action.payload.playerIndex,
+                    state.players[state.currentPlayer].pieces[
+                      action.payload.pieceIndex
+                    ].position,
+                  ),
                 position: newPosition,
                 isPlayable: hasPlayerFinishedPlaying ? false : true,
                 isOnBoard: true,
@@ -337,7 +453,7 @@ function Game() {
       setIsDiceRolling(true);
       diceBoxRef.current.onRollComplete = (rollResult) => {
         const [die1, die2] = rollResult[0].rolls;
-        console.log(rollResult)
+        console.log(rollResult);
         dispatch({
           type: "ROLL_DICE",
           payload: [die1.value, die2.value, die1.value + die2.value],
@@ -351,7 +467,16 @@ function Game() {
     <>
       <div className="flex justify-around mt-3 flex-wrap">
         <div className="w-60 h-40 border bg-red-500 flex flex-col justify-between py-4 items-center ">
-          <p className="">{currentPlayer}</p>
+          <p className="">
+            {currentPlayer == 0
+              ? "Red"
+              : currentPlayer == 1
+                ? "Green"
+                : currentPlayer == 2
+                  ? "Blue"
+                  : "Yellow"}{" "}
+            player turn
+          </p>
           <div className=" flex flex-wrap justify-around gap-3">
             {rollResult.map((result, dieIndex) => (
               <button
@@ -390,7 +515,16 @@ function Game() {
             player.pieces.map((piece, pieceIndex) => {
               const position = piece.isOnHome
                 ? getInitialPosition(piece.position)
-                : getCellPosition(piece.position);
+                : piece.hasGoneRound &&
+                    isPieceReadyToGoHome(playerIndex, piece.position)
+                  ? getHomeCellPosition(piece.position)
+                  : getCellPosition(piece.position);
+              console.log(
+                isPieceReadyToGoHome(playerIndex, piece.position),
+                playerIndex,
+                piece.hasGoneRound,
+                piece.position,
+              );
               // const position = piece.position;
               // console.log(position, piece.position, piece.startPosition, piece);
               return (
@@ -402,7 +536,7 @@ function Game() {
                       payload: { pieceIndex, playerIndex },
                     });
                   }}
-                  className="relative w-7 h-7  top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 "
+                  className="relative w-7 h-7  top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 z-20"
                   style={{
                     ...position,
                     // ...getInitialPosition(position),
