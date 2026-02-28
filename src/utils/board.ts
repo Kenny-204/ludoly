@@ -2,7 +2,14 @@ import type { CSSProperties } from "react";
 
 export function getCellPosition(index: number) {
   // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
-
+  if (index == 100) {
+    return {
+      gridColumnStart: 8,
+      gridColumnEnd: 9,
+      gridRowStart: 8,
+      gridRowEnd: 9,
+    };
+  }
   const reversedIndex = index === 0 ? 0 : 52 - index;
 
   if (reversedIndex >= 0 && reversedIndex <= 5) {
@@ -116,6 +123,7 @@ export function getCellPosition(index: number) {
       gridRowEnd: 2,
     };
   }
+
   // if (reversedIndex >= 52 && reversedIndex <= 56) {
   //   return {
   //     gridRowStart: 2 + reversedIndex - 52,
@@ -132,17 +140,18 @@ export function getCellPosition(index: number) {
 }
 
 export function getHomeCellPosition(index: number) {
-  if (index >= 0 && index <= 4) {
+  if (index >= 2 && index <= 6) {
+    const offset = index - 2;
     return {
-      gridRowStart: 2 + index,
-      gridRowEnd: 3 + index,
+      gridRowStart: 2 + offset,
+      gridRowEnd: 3 + offset,
       gridColumnStart: 8,
       gridColumnEnd: 9,
       backgroundColor: "green",
     };
   }
-  if (index >= 5 && index <= 9) {
-    const offset = index - 5;
+  if (index >= 7 && index <= 11) {
+    const offset = index - 7;
     return {
       gridRowStart: 8,
       gridRowEnd: 9,
@@ -151,8 +160,8 @@ export function getHomeCellPosition(index: number) {
       backgroundColor: "red",
     };
   }
-  if (index >= 10 && index <= 14) {
-    const offset = index - 10;
+  if (index >= 12 && index <= 16) {
+    const offset = index - 12;
     return {
       gridRowStart: 14 - offset,
       gridRowEnd: 15 - offset,
@@ -161,8 +170,8 @@ export function getHomeCellPosition(index: number) {
       backgroundColor: "blue",
     };
   }
-  if (index >= 15 && index <= 19) {
-    const offset = index - 15;
+  if (index >= 17 && index <= 21) {
+    const offset = index - 17;
     return {
       gridRowStart: 8,
       gridRowEnd: 9,

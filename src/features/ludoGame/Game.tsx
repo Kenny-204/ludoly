@@ -8,12 +8,14 @@ import {
 } from "../../utils/board";
 
 type piece = {
+  id: string;
   position: number;
   isPlayable: boolean;
   isOnHome: boolean;
   isOnBoard: boolean;
   hasGoneRound: boolean;
   isInHomeStretch: boolean;
+  initialPosition: number;
 };
 
 type player = {
@@ -62,7 +64,9 @@ const initialState: gameStateType = {
       color: "red",
       pieces: [
         {
+          id: `player-1-0`,
           position: 1,
+          initialPosition: 1,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -70,7 +74,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-1-1`,
           position: 2,
+          initialPosition: 2,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -78,7 +84,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-1-2`,
           position: 3,
+          initialPosition: 3,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -86,7 +94,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-1-3`,
           position: 4,
+          initialPosition: 4,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -102,7 +112,9 @@ const initialState: gameStateType = {
       color: "green",
       pieces: [
         {
+          id: `player-2-0`,
           position: 5,
+          initialPosition: 5,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -110,7 +122,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-2-1`,
           position: 6,
+          initialPosition: 6,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -118,7 +132,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-2-2`,
           position: 7,
+          initialPosition: 7,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -126,7 +142,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-2-3`,
           position: 8,
+          initialPosition: 8,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -141,7 +159,9 @@ const initialState: gameStateType = {
       color: "blue",
       pieces: [
         {
+          id: `player-3-0`,
           position: 9,
+          initialPosition: 9,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -149,7 +169,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-3-1`,
           position: 10,
+          initialPosition: 10,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -157,7 +179,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-3-2`,
           position: 11,
+          initialPosition: 11,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -165,7 +189,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-3-3`,
           position: 12,
+          initialPosition: 12,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -180,7 +206,9 @@ const initialState: gameStateType = {
       color: "yellow",
       pieces: [
         {
+          id: `player-4-0`,
           position: 13,
+          initialPosition: 13,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -188,7 +216,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-4-1`,
           position: 14,
+          initialPosition: 14,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -196,7 +226,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-4-2`,
           position: 15,
+          initialPosition: 15,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -204,7 +236,9 @@ const initialState: gameStateType = {
           isInHomeStretch: false,
         },
         {
+          id: `player-4-3`,
           position: 16,
+          initialPosition: 16,
           isOnBoard: false,
           isOnHome: true,
           isPlayable: false,
@@ -223,6 +257,44 @@ const initialState: gameStateType = {
 function getNextPlayer(currentPlayer: number, totalPlayers: number = 4) {
   return (currentPlayer + 1) % totalPlayers;
 }
+
+function isInHomeStretch(
+  newPosition: number,
+  playerIndex: number,
+  currentPiece: piece,
+) {
+  if (
+    playerIndex === 0 &&
+    currentPiece.hasGoneRound == true &&
+    newPosition >= 7 &&
+    newPosition <= 11
+  )
+    return true;
+  else if (
+    playerIndex === 1 &&
+    currentPiece.hasGoneRound == true &&
+    newPosition >= 2 &&
+    newPosition <= 6
+  ) {
+    return true;
+  } else if (
+    playerIndex === 2 &&
+    currentPiece.hasGoneRound == true &&
+    newPosition >= 12 &&
+    newPosition <= 16
+  ) {
+    return true;
+  } else if (
+    playerIndex === 3 &&
+    currentPiece.hasGoneRound == true &&
+    newPosition >= 17 &&
+    newPosition <= 21
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function getNextPosition(
   currentPosition: number,
   playerIndex: number,
@@ -240,11 +312,12 @@ function getNextPosition(
   }
   if (
     playerIndex === 1 &&
+    currentPosition + currentMoveNumber > 1 &&
     state.players[playerIndex].pieces[pieceIndex].hasGoneRound == true
   ) {
     const wrappedPosition = (currentMoveNumber + currentPosition) % 52;
 
-    if (wrappedPosition > 1) return wrappedPosition - 2;
+    if (wrappedPosition > 1) return wrappedPosition;
 
     return wrappedPosition;
   }
@@ -304,7 +377,6 @@ function reducer(state: gameStateType, action: actionType) {
       });
 
       const shouldSkipTurn = !isPieceOnBoard && !diceContainsSix;
-      console.log(shouldSkipTurn, !shouldSkipTurn);
       return {
         ...state,
         currentPlayer: shouldSkipTurn
@@ -333,22 +405,32 @@ function reducer(state: gameStateType, action: actionType) {
       };
 
     case "MOVE_PIECE": {
-      if (
-        !state.players[state.currentPlayer].pieces[action.payload.pieceIndex]
-          .isPlayable
-      ) {
+      const currentPiece =
+        state.players[state.currentPlayer].pieces[action.payload.pieceIndex];
+      if (!currentPiece.isPlayable) {
         return state;
       }
       if (!state.currentMoveNumber) {
         return state;
       }
-      if (
-        state.players[state.currentPlayer].pieces[action.payload.pieceIndex]
-          .isOnHome &&
-        state.currentMoveNumber !== 6
-      ) {
+      if (currentPiece.isOnHome && state.currentMoveNumber !== 6) {
         return state;
       }
+
+      const positionMap: Record<number, number[][]> = {};
+      // new Map<number, number[]>();
+
+      state.players.forEach((player, playerIndex) => {
+        player.pieces.forEach((piece, pieceIndex) => {
+          if (!piece.isOnHome && !piece.isInHomeStretch && piece.isOnBoard) {
+            if (!positionMap[piece.position]) {
+              positionMap[piece.position] = [];
+            }
+            positionMap[piece.position].push([playerIndex, pieceIndex]);
+          }
+        });
+      });
+      console.log(positionMap);
 
       const totalRollSelected = state.currentDieIndex == 2;
       const hasPlayerFinishedPlaying =
@@ -371,7 +453,52 @@ function reducer(state: gameStateType, action: actionType) {
             ? 0
             : state.currentPlayer + 1,
         players: state.players.map((player, index) => {
-          if (index !== state.currentPlayer) return player;
+          const newPosition = currentPiece.isOnHome
+            ? getStartPosition(action.payload.playerIndex)
+            : getNextPosition(
+                currentPiece.position,
+                action.payload.playerIndex,
+                action.payload.pieceIndex,
+                state,
+                state.currentMoveNumber!,
+              );
+          const capturedPiece = positionMap[newPosition]?.filter(
+            ([playerIndex]) => playerIndex != state.currentPlayer,
+          )[0];
+          console.log(capturedPiece);
+
+          if (index !== state.currentPlayer) {
+            if (capturedPiece && index === capturedPiece[0]) {
+              console.log(capturedPiece[0], index);
+              return {
+                ...player,
+                pieces: player.pieces.map((piece, index) => {
+                  if (index !== capturedPiece[1]) return piece;
+                  return {
+                    ...piece,
+                    position: piece.initialPosition,
+                    isOnBoard: false,
+                    isOnHome: true,
+                  };
+                }),
+              };
+            }
+            return player;
+          }
+          if (capturedPiece) {
+            return {
+              ...player,
+              pieces: player.pieces.map((piece, index) => {
+                if (index !== action.payload.pieceIndex) return piece;
+                return {
+                  ...piece,
+                  position: 100,
+                  isOnBoard: false,
+                };
+              }),
+            };
+          }
+
           return {
             ...player,
             isPlaying: !hasPlayerFinishedPlaying,
@@ -379,15 +506,8 @@ function reducer(state: gameStateType, action: actionType) {
               if (index !== action.payload.pieceIndex)
                 return {
                   ...piece,
-
                   isPlayable: hasPlayerFinishedPlaying ? false : true,
                 };
-              // if (!state.currentMoveNumber) {
-              //   return piece;
-              // }
-              // if (piece.isOnHome && state.currentMoveNumber !== 6) {
-              //   return piece;
-              // }
               const newPosition = piece.isOnHome
                 ? getStartPosition(action.payload.playerIndex)
                 : getNextPosition(
@@ -397,23 +517,25 @@ function reducer(state: gameStateType, action: actionType) {
                     state,
                     state.currentMoveNumber!,
                   );
+              const inHomeStretch = isInHomeStretch(
+                newPosition,
+                action.payload.playerIndex,
+                currentPiece,
+              );
 
               return {
                 ...piece,
                 hasGoneRound:
-                  state.players[state.currentPlayer].pieces[
-                    action.payload.pieceIndex
-                  ].hasGoneRound ||
+                  currentPiece.hasGoneRound ||
                   hasGoneRound(
                     action.payload.playerIndex,
-                    state.players[state.currentPlayer].pieces[
-                      action.payload.pieceIndex
-                    ].position,
+                    currentPiece.position,
                   ),
                 position: newPosition,
                 isPlayable: hasPlayerFinishedPlaying ? false : true,
                 isOnBoard: true,
                 isOnHome: false,
+                isInHomeStretch: inHomeStretch,
               };
             }),
           };
@@ -453,7 +575,7 @@ function Game() {
       setIsDiceRolling(true);
       diceBoxRef.current.onRollComplete = (rollResult) => {
         const [die1, die2] = rollResult[0].rolls;
-        console.log(rollResult);
+        // console.log(rollResult);
         dispatch({
           type: "ROLL_DICE",
           payload: [die1.value, die2.value, die1.value + die2.value],
@@ -480,6 +602,7 @@ function Game() {
           <div className=" flex flex-wrap justify-around gap-3">
             {rollResult.map((result, dieIndex) => (
               <button
+                key={dieIndex}
                 className="bg-yellow-300 w-15 h-15 "
                 onClick={() =>
                   dispatch({
@@ -515,21 +638,22 @@ function Game() {
             player.pieces.map((piece, pieceIndex) => {
               const position = piece.isOnHome
                 ? getInitialPosition(piece.position)
-                : piece.hasGoneRound &&
-                    isPieceReadyToGoHome(playerIndex, piece.position)
+                : (piece.hasGoneRound &&
+                      isPieceReadyToGoHome(playerIndex, piece.position)) ||
+                    piece.isInHomeStretch
                   ? getHomeCellPosition(piece.position)
                   : getCellPosition(piece.position);
-              console.log(
-                isPieceReadyToGoHome(playerIndex, piece.position),
-                playerIndex,
-                piece.hasGoneRound,
-                piece.position,
-              );
+              // console.log(
+              //   isPieceReadyToGoHome(playerIndex, piece.position),
+              //   playerIndex,
+              //   piece.hasGoneRound,
+              //   piece.position,
+              // );
               // const position = piece.position;
               // console.log(position, piece.position, piece.startPosition, piece);
               return (
                 <div
-                  key={pieceIndex}
+                  key={piece.id}
                   onClick={() => {
                     dispatch({
                       type: "MOVE_PIECE",
