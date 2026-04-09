@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 
 export function getCellPosition(index: number) {
-  // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
   if (index == 100) {
     return {
       gridColumnStart: 8,
@@ -10,6 +9,7 @@ export function getCellPosition(index: number) {
       gridRowEnd: 9,
     };
   }
+  // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
   const reversedIndex = index === 0 ? 0 : 52 - index;
 
   if (reversedIndex >= 0 && reversedIndex <= 5) {

@@ -48,7 +48,7 @@ function Board({ children }: { children: React.ReactNode }) {
         {homeArray.map((val, i) => {
           return (
             <div key={i} style={getHomeCellPosition(val)} className="border">
-              {/* {val} */}
+              {val}
             </div>
           );
         })}
@@ -69,7 +69,7 @@ function Board({ children }: { children: React.ReactNode }) {
               style={{ ...getCellPosition(val), backgroundColor: color }}
               className="border"
             >
-              {/* {val} */}
+              {val}
             </div>
           );
         })}
