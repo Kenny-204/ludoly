@@ -490,6 +490,7 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
             return {
               ...player,
               state: "IDLE" as playerState,
+              score: player.score + 1,
               pieces: player.pieces.map((piece, index) => {
                 if (index !== action.payload.pieceIndex) return piece;
                 return {
@@ -503,6 +504,7 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
           return {
             ...player,
             state: "IDLE" as playerState,
+            score: movedPiece.distance === 56 ? player.score + 1 : player.score,
             pieces: player.pieces.map((piece, index) => {
               if (index === action.payload.pieceIndex) {
                 return movedPiece;
@@ -572,7 +574,7 @@ function Game() {
     () => players.find((player) => player.id === currentPlayerId),
     [players, currentPlayerId],
   )!;
-  // console.log(players);
+  console.log(players);
 
   const diceBoxRef = useRef<DiceBox | null>(null);
   const [isDiceRolling, setIsDiceRolling] = useState(false);
@@ -602,7 +604,6 @@ function Game() {
         dispatch({
           type: "ROLL_DICE",
           payload: [die1.value, die2.value, die1.value + die2.value],
-          
         });
         setIsDiceRolling(false);
         // console.log(players);
