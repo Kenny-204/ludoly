@@ -71,12 +71,12 @@ const initialState: gameStateType = {
       pieces: [
         {
           id: `player-1-0`,
-          position: 40,
+          position: 1,
           ownerId: 0,
           initialPosition: 1,
-          state: "BOARD",
-          hasGoneRound: true,
-          distance: 50,
+          state: "HOME",
+          hasGoneRound: false,
+          distance: 0,
         },
         {
           id: `player-1-1`,
@@ -280,32 +280,58 @@ function isPiecePlayable(
   playerId: number,
   gamePhase: "WAITING" | "ROLLING",
 ): boolean {
-  if (gamePhase === "WAITING") return false;
-  if (!dice || playerId !== currentPiece.ownerId) return false;
-  if (currentPiece.state === "FINISHED") return false;
+  if (gamePhase === "WAITING") {
+    // console.log("It happened because the game phase was waiting");
+    return false;
+  }
+  if (!dice || playerId !== currentPiece.ownerId) {
+    console.log(
+      "It happened because there was no dice or the player id was not equal to the current piece",
+    );
+    return false;
+  }
+  if (currentPiece.state === "FINISHED") {
+    console.log("It happened because the piece was finished");
+    return false;
+  }
 
   const diceValues = Array.isArray(dice) ? dice : [dice];
   return diceValues.some((d, i) => {
+    if (d <= 0) {
+      // console.log("It happened because thedie was -");
+      return false;
+    }
     if (currentPiece.state === "BOARD") {
-      if (currentPiece.distance + d > 56 && d > 0) return false;
+      if (currentPiece.distance + d > 56) {
+        console.log(
+          "It happened because the it would have made the distance more than 56",
+        );
+        return false;
+      }
       return d && true;
     } else if (currentPiece.state === "HOME") return i < 2 && d === 6;
     else if (currentPiece.state === "HOME_STRETCH") {
-      if (currentPiece.distance + d > 56 && d > 0) return false;
+      if (currentPiece.distance + d > 56) {
+        console.log(
+          "It happened because the distance would have been more than 56",
+        );
+        return false;
+      }
+
       return true;
     }
   });
 }
 
-function reducer(state: gameStateType, action: actionType) {
+function reducer(state: gameStateType, action: actionType):gameStateType {
   switch (action.type) {
     case "ROLL_DICE": {
       const currentPlayer = state.players.find(
         (player) => player.id === state.currentPlayerId,
       )!;
 
-      const diceContainsSix =
-        action.payload[0] === 6 || action.payload[1] === 6;
+      // const diceContainsSix =
+      //   action.payload[0] === 6 || action.payload[1] === 6;
 
       // let isPieceOnBoard;
       // state.players
@@ -317,13 +343,9 @@ function reducer(state: gameStateType, action: actionType) {
       state.players
         .find((player) => player.id === state.currentPlayerId)!
         .pieces.some((piece) => {
+          console.log(piece, action.payload, currentPlayer.id, state.gamePhase);
           if (
-            isPiecePlayable(
-              piece,
-              action.payload,
-              currentPlayer.id,
-              state.gamePhase,
-            )
+            isPiecePlayable(piece, action.payload, currentPlayer.id, "ROLLING")
           )
             return (isThereAnyPlayablePiece = true);
         });
@@ -357,6 +379,8 @@ function reducer(state: gameStateType, action: actionType) {
       };
 
     case "MOVE_PIECE": {
+      // validate move
+
       const currentPlayer = state.players.find(
         (player) => player.id === state.currentPlayerId,
       )!;
@@ -372,6 +396,8 @@ function reducer(state: gameStateType, action: actionType) {
       ) {
         return state;
       }
+
+      // compute the new values
 
       const positionMap: Record<number, number[][]> = {};
       state.players.forEach((player) => {
@@ -394,21 +420,99 @@ function reducer(state: gameStateType, action: actionType) {
         if (index === state.currentDieIndex) return 0;
         return rollNumber;
       });
+      // compute moved piece
+      // (where the piece is suppposed to go)
+      const newPosition =
+        currentPiece.state === "HOME"
+          ? getStartPosition(action.payload.playerId)
+          : currentPiece.distance + state.currentMoveNumber! === 56
+            ? 100
+            : getNextPosition(
+                currentPiece.position,
+                currentPiece.distance,
+                action.payload.playerId,
+                state.currentMoveNumber!,
+              );
+      // (check if it's in the home stretch)
+      const inHomeStretch =
+        currentPiece.distance + state.currentMoveNumber! > 50;
+      // (the piece that has moved)
+      const movedPiece: piece = {
+        ...currentPiece,
+        hasGoneRound: currentPiece.distance > 35,
+        position: newPosition,
+        distance:
+          currentPiece.distance !== 0
+            ? currentPiece.distance + state.currentMoveNumber!
+            : 1,
+        state: (currentPiece.distance + state.currentMoveNumber! === 56
+          ? "FINISHED"
+          : inHomeStretch
+            ? "HOME_STRETCH"
+            : "BOARD") as pieceState,
+      };
+      // check if there was a captured piece
+      const capturedPiece = positionMap[newPosition]?.filter(
+        ([playerId]) => playerId != state.currentPlayerId,
+      )[0];
+      // build the newPlayer object
 
+      const newPlayers = state.players.map((player) => {
+        //  send the captured piece to home if any
+        if (player.id !== state.currentPlayerId) {
+          if (capturedPiece && player.id === capturedPiece[0]) {
+            // console.log(capturedPiece[0], player.id);
+            return {
+              ...player,
+
+              pieces: player.pieces.map((piece, index) => {
+                if (index !== capturedPiece[1]) return piece;
+                return {
+                  ...piece,
+                  position: piece.initialPosition,
+                  state: "HOME" as pieceState,
+                  distance: 0,
+                };
+              }),
+            };
+          }
+        }
+        // move current player
+
+        if (player.id === state.currentPlayerId) {
+          if (capturedPiece) {
+            return {
+              ...player,
+              state: "IDLE" as playerState,
+              pieces: player.pieces.map((piece, index) => {
+                if (index !== action.payload.pieceIndex) return piece;
+                return {
+                  ...piece,
+                  position: 100,
+                  state: "FINISHED" as pieceState,
+                };
+              }),
+            };
+          }
+          return {
+            ...player,
+            state: "IDLE" as playerState,
+            pieces: player.pieces.map((piece, index) => {
+              if (index === action.payload.pieceIndex) {
+                return movedPiece;
+              }
+              return piece;
+            }),
+          };
+        }
+        return player;
+      });
+      // check if there's still any piece that can be played
       let isThereAnyPlayablePiece;
-      state.players
+      newPlayers
         .find((player) => player.id === state.currentPlayerId)!
         .pieces.some((piece) => {
-          console.log(
-            isPiecePlayable(
-              piece,
-              state.rollResult,
-              currentPlayer.id,
-              state.gamePhase,
-            ),
-            piece.id,
-          );
-          console.log(piece, newRollResult, currentPlayer.id, state.gamePhase);
+         
           if (
             isPiecePlayable(
               piece,
@@ -420,107 +524,21 @@ function reducer(state: gameStateType, action: actionType) {
             return (isThereAnyPlayablePiece = true);
         });
       const hasPlayerFinishedPlaying = !isThereAnyPlayablePiece;
+      const nextPlayerId = !hasPlayerFinishedPlaying
+        ? state.currentPlayerId
+        : getNextPlayer(state.currentPlayerId);
       // const hasPlayerFinishedPlaying =
       //   state.rollResult[0] == 0 ||
       //   state.rollResult[1] == 0 ||
       //   totalRollSelected;
+      // Build the new Player
       return {
         ...state,
         rollResult: newRollResult,
         gamePhase: hasPlayerFinishedPlaying ? "WAITING" : "ROLLING",
         currentMoveNumber: null,
-        // state: !hasPlayerFinishedPlaying ? "PLAYING" : "IDLE",
-        currentPlayerId: !hasPlayerFinishedPlaying
-          ? state.currentPlayerId
-          : getNextPlayer(state.currentPlayerId),
-        players: state.players.map((player) => {
-          const newPosition =
-            currentPiece.state === "HOME"
-              ? getStartPosition(action.payload.playerId)
-              : getNextPosition(
-                  currentPiece.position,
-                  currentPiece.distance,
-                  action.payload.playerId,
-                  state.currentMoveNumber!,
-                );
-          const capturedPiece = positionMap[newPosition]?.filter(
-            ([playerId]) => playerId != state.currentPlayerId,
-          )[0];
-
-          if (player.id !== state.currentPlayerId) {
-            if (capturedPiece && player.id === capturedPiece[0]) {
-              // console.log(capturedPiece[0], player.id);
-              return {
-                ...player,
-
-                pieces: player.pieces.map((piece, index) => {
-                  if (index !== capturedPiece[1]) return piece;
-                  return {
-                    ...piece,
-                    position: piece.initialPosition,
-                    state: "HOME",
-                    distance: 0,
-                  };
-                }),
-              };
-            }
-            return player;
-          }
-          if (capturedPiece) {
-            return {
-              ...player,
-              state: "IDLE",
-              pieces: player.pieces.map((piece, index) => {
-                if (index !== action.payload.pieceIndex) return piece;
-                return {
-                  ...piece,
-                  position: 100,
-                  state: "FINISHED",
-                };
-              }),
-            };
-          }
-
-          return {
-            ...player,
-            state: hasPlayerFinishedPlaying ? "IDLE" : "PLAYING",
-            pieces: player.pieces.map((piece, index) => {
-              if (index !== action.payload.pieceIndex)
-                return {
-                  ...piece,
-                };
-              const newPosition =
-                currentPiece.state === "HOME"
-                  ? getStartPosition(action.payload.playerId)
-                  : currentPiece.distance + state.currentMoveNumber! === 56
-                    ? 100
-                    : getNextPosition(
-                        currentPiece.position,
-                        currentPiece.distance,
-                        action.payload.playerId,
-                        state.currentMoveNumber!,
-                      );
-
-              const inHomeStretch =
-                currentPiece.distance + state.currentMoveNumber! > 50;
-              return {
-                ...piece,
-                hasGoneRound: currentPiece.distance > 35,
-                position: newPosition,
-                distance:
-                  currentPiece.distance !== 0
-                    ? currentPiece.distance + state.currentMoveNumber!
-                    : 1,
-                state:
-                  currentPiece.distance + state.currentMoveNumber! === 56
-                    ? "FINISHED"
-                    : inHomeStretch
-                      ? "HOME_STRETCH"
-                      : "BOARD",
-              };
-            }),
-          };
-        }),
+        currentPlayerId: nextPlayerId,
+        players: newPlayers,
       };
     }
     default:
@@ -533,11 +551,11 @@ function Game() {
     { players, rollResult, currentMoveNumber, currentPlayerId, gamePhase },
     dispatch,
   ] = useReducer(reducer, initialState);
-
   const currentPlayer = useMemo(
     () => players.find((player) => player.id === currentPlayerId),
     [players, currentPlayerId],
   )!;
+  console.log(players);
 
   const diceBoxRef = useRef<DiceBox | null>(null);
   const [isDiceRolling, setIsDiceRolling] = useState(false);
