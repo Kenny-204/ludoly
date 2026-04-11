@@ -24,6 +24,7 @@ type player = {
   id: number;
   color: string;
   state: playerState;
+
   score: number;
   pieces: piece[];
 };
@@ -40,6 +41,7 @@ type gameStateType = {
   currentPlayerId: number;
   players: player[];
   rollResult: number[];
+  rolledDoubleSix: boolean;
   currentMoveNumber: number | null;
   currentDieIndex: number | null;
   gamePhase: "WAITING" | "ROLLING";
@@ -244,6 +246,7 @@ const initialState: gameStateType = {
   currentPlayerId: 0,
   currentMoveNumber: null,
   currentDieIndex: null,
+  rolledDoubleSix: false,
   gamePhase: "ROLLING",
   rollResult: [0, 0, 0],
 };
@@ -323,7 +326,7 @@ function isPiecePlayable(
   });
 }
 
-function reducer(state: gameStateType, action: actionType):gameStateType {
+function reducer(state: gameStateType, action: actionType): gameStateType {
   switch (action.type) {
     case "ROLL_DICE": {
       const currentPlayer = state.players.find(
@@ -339,11 +342,13 @@ function reducer(state: gameStateType, action: actionType):gameStateType {
       //   .pieces.some((piece) => {
       //     if (piece.state === "BOARD") return (isPieceOnBoard = true);
       //   });
+      const rolledDoubleSix =
+        action.payload[0] === 6 && action.payload[1] === 6;
       let isThereAnyPlayablePiece;
       state.players
         .find((player) => player.id === state.currentPlayerId)!
         .pieces.some((piece) => {
-          console.log(piece, action.payload, currentPlayer.id, state.gamePhase);
+          // console.log(piece, action.payload, currentPlayer.id, state.gamePhase);
           if (
             isPiecePlayable(piece, action.payload, currentPlayer.id, "ROLLING")
           )
@@ -357,6 +362,7 @@ function reducer(state: gameStateType, action: actionType):gameStateType {
           ? getNextPlayer(state.currentPlayerId)
           : state.currentPlayerId,
         rollResult: action.payload,
+        rolledDoubleSix,
         gamePhase: shouldSkipTurn ? "WAITING" : "ROLLING",
         players: state.players.map((player, index) => {
           if (index !== state.currentPlayerId) return player;
@@ -512,7 +518,6 @@ function reducer(state: gameStateType, action: actionType):gameStateType {
       newPlayers
         .find((player) => player.id === state.currentPlayerId)!
         .pieces.some((piece) => {
-         
           if (
             isPiecePlayable(
               piece,
@@ -524,9 +529,20 @@ function reducer(state: gameStateType, action: actionType):gameStateType {
             return (isThereAnyPlayablePiece = true);
         });
       const hasPlayerFinishedPlaying = !isThereAnyPlayablePiece;
-      const nextPlayerId = !hasPlayerFinishedPlaying
-        ? state.currentPlayerId
-        : getNextPlayer(state.currentPlayerId);
+      const nextPlayerId =
+        !hasPlayerFinishedPlaying ||
+        (hasPlayerFinishedPlaying && state.rolledDoubleSix)
+          ? state.currentPlayerId
+          : getNextPlayer(state.currentPlayerId);
+      const rolledDoubleSix =
+        hasPlayerFinishedPlaying && state.rolledDoubleSix
+          ? false
+          : state.rolledDoubleSix;
+      console.log(
+        rolledDoubleSix,
+        state.rolledDoubleSix,
+        hasPlayerFinishedPlaying,
+      );
       // const hasPlayerFinishedPlaying =
       //   state.rollResult[0] == 0 ||
       //   state.rollResult[1] == 0 ||
@@ -539,6 +555,7 @@ function reducer(state: gameStateType, action: actionType):gameStateType {
         currentMoveNumber: null,
         currentPlayerId: nextPlayerId,
         players: newPlayers,
+        rolledDoubleSix,
       };
     }
     default:
@@ -555,7 +572,7 @@ function Game() {
     () => players.find((player) => player.id === currentPlayerId),
     [players, currentPlayerId],
   )!;
-  console.log(players);
+  // console.log(players);
 
   const diceBoxRef = useRef<DiceBox | null>(null);
   const [isDiceRolling, setIsDiceRolling] = useState(false);
@@ -585,6 +602,7 @@ function Game() {
         dispatch({
           type: "ROLL_DICE",
           payload: [die1.value, die2.value, die1.value + die2.value],
+          
         });
         setIsDiceRolling(false);
         // console.log(players);
