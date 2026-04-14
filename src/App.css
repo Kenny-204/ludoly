@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+@theme {
+  /* ── Colors ── */
+  --color-bg:        #1a1630;
+  --color-surface:   #221e3a;
+  --color-surface-2: #2c2850;
+  --color-border:    #3a3560;
+
+  --color-text:      #f0f0f8;
+  --color-muted:     #6b6b8a;
+
+  --color-accent:       #f5c518;
+  --color-accent-hover: #ddb000;
+
+  --color-ludo-red:    #ef4444;
+  --color-ludo-green:  #22c55e;
+  --color-ludo-blue:   #3b82f6;
+  --color-ludo-yellow: #eab308;
+
+  /* ── Typography ── */
+  --font-display: "Fredoka", sans-serif;
+  --font-body:    "Inter", sans-serif;
+
+  /* ── Border Radius ── */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 2rem;
+
+  /* ── Shadows ── */
+  --shadow-card:   0 4px 24px 0 rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 0 24px 0 rgba(245, 197, 24, 0.25);
+  --shadow-glow-red:    0 0 20px 0 rgba(239, 68, 68, 0.3);
+  --shadow-glow-green:  0 0 20px 0 rgba(34, 197, 94, 0.3);
+  --shadow-glow-blue:   0 0 20px 0 rgba(59, 130, 246, 0.3);
+  --shadow-glow-yellow: 0 0 20px 0 rgba(234, 179, 8, 0.3);
+}
+
+/* ── Base ── */
+html, body, #root {
+  height: 100%;
+  background-color: #1a1630;
+  font-family: "Inter", sans-serif;
+  color: #f0f0f8;
+}
+
+/* Board cells use `border` which inherits currentColor.
+   Reset text color to dark on white so borders stay visible. */
+.bg-white {
+  color: #111;
+}

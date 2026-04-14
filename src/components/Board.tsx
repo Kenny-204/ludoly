@@ -1,18 +1,14 @@
 import { getCellPosition, getHomeCellPosition } from "../utils/board";
 
 function Board({ children }: { children: React.ReactNode }) {
-  const array = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-    40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
-  ];
+  const array = Array.from({length: 52}, (_, i) => i)
   const homeArray = [
     2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   ];
 
   return (
     <div className="h-125">
-      <div className="relative mx-auto w-125 h-full mt-5 bg-white-700 border grid grid-cols-15 grid-rows-15">
+      <div className="relative mx-auto w-125 h-full mt-5 bg-white border grid grid-cols-15 grid-rows-15">
         <div className="bg-[red] col-start-1 col-end-7 row-start-1 row-end-7 grid grid-cols-6 grid-rows-6">
           <div className="bg-white col-start-2 col-end-6 row-start-2 row-end-6 relative">
             <div className=" absolute top-3 left-3 bg-white w-11 h-11 rounded-full border-[red] border-5  "></div>

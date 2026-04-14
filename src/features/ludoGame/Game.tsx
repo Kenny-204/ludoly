@@ -6,6 +6,17 @@ import {
   getHomeCellPosition,
   getInitialPosition,
 } from "../../utils/board";
+import { useSearchParams } from "react-router-dom";
+
+// ── Style-only constants ────────────────────────────────────────
+const playerColorMap: Record<string, { glow: string; hex: string }> = {
+  red: { glow: "rgba(239,68,68,0.35)", hex: "#ef4444" },
+  green: { glow: "rgba(34,197,94,0.35)", hex: "#22c55e" },
+  blue: { glow: "rgba(59,130,246,0.35)", hex: "#3b82f6" },
+  yellow: { glow: "rgba(234,179,8,0.35)", hex: "#eab308" },
+};
+const dieLabels = ["Die 1", "Die 2", "Total"];
+// ───────────────────────────────────────────────────────────────
 
 type pieceState = "HOME" | "BOARD" | "HOME_STRETCH" | "FINISHED";
 type playerState = "PLAYING" | "IDLE" | "WON";
@@ -43,6 +54,7 @@ type gameStateType = {
   rollResult: number[];
   rolledDoubleSix: boolean;
   currentMoveNumber: number | null;
+  playing: number[];
   currentDieIndex: number | null;
   gamePhase: "WAITING" | "ROLLING";
 };
@@ -63,196 +75,212 @@ function getStartPosition(playerIndex: number) {
   return 0;
 }
 
-const initialState: gameStateType = {
-  players: [
-    {
-      id: 0,
-      score: 0,
-      state: "IDLE",
-      color: "red",
-      pieces: [
-        {
-          id: `player-1-0`,
-          position: 1,
-          ownerId: 0,
-          initialPosition: 1,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-1-1`,
-          position: 2,
-          initialPosition: 2,
-          ownerId: 0,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-1-2`,
-          position: 3,
-          initialPosition: 3,
-          ownerId: 0,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-1-3`,
-          position: 4,
-          initialPosition: 4,
-          ownerId: 0,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-      ],
-    },
+const initialState = function (numPlayers: number): gameStateType {
+  const playing =
+    numPlayers === 2
+      ? [0, 3]
+      : numPlayers === 3
+        ? [0, 1, 2]
+        : numPlayers === 4
+          ? [0, 1, 2, 3]
+          : [0];
 
-    {
-      id: 1,
-      score: 0,
-      state: "IDLE",
-      color: "green",
-      pieces: [
-        {
-          id: `player-2-0`,
-          position: 5,
-          initialPosition: 5,
-          ownerId: 1,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-2-1`,
-          position: 6,
-          initialPosition: 6,
-          ownerId: 1,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-2-2`,
-          position: 7,
-          initialPosition: 7,
-          ownerId: 1,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-2-3`,
-          position: 8,
-          initialPosition: 8,
-          ownerId: 1,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-      ],
-    },
-    {
-      id: 2,
-      score: 0,
-      state: "IDLE",
-      color: "blue",
-      pieces: [
-        {
-          id: `player-3-0`,
-          position: 9,
-          initialPosition: 9,
-          ownerId: 2,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-3-1`,
-          position: 10,
-          initialPosition: 10,
-          ownerId: 2,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-3-2`,
-          position: 11,
-          initialPosition: 11,
-          ownerId: 2,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-3-3`,
-          position: 12,
-          initialPosition: 12,
-          ownerId: 2,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-      ],
-    },
-    {
-      id: 3,
-      score: 0,
-      state: "IDLE",
-      color: "yellow",
-      pieces: [
-        {
-          id: `player-4-0`,
-          position: 13,
-          initialPosition: 13,
-          ownerId: 3,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-4-1`,
-          position: 14,
-          initialPosition: 14,
-          ownerId: 3,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-4-2`,
-          position: 15,
-          initialPosition: 15,
-          ownerId: 3,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-        {
-          id: `player-4-3`,
-          position: 16,
-          initialPosition: 16,
-          ownerId: 3,
-          state: "HOME",
-          hasGoneRound: false,
-          distance: 0,
-        },
-      ],
-    },
-  ],
-  currentPlayerId: 0,
-  currentMoveNumber: null,
-  currentDieIndex: null,
-  rolledDoubleSix: false,
-  gamePhase: "ROLLING",
-  rollResult: [0, 0, 0],
+  return {
+    players: [
+      {
+        id: 0,
+        score: 0,
+        state: "IDLE",
+        color: "red",
+        pieces: [
+          {
+            id: `player-1-0`,
+            position: 1,
+            ownerId: 0,
+            initialPosition: 1,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-1-1`,
+            position: 2,
+            initialPosition: 2,
+            ownerId: 0,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-1-2`,
+            position: 3,
+            initialPosition: 3,
+            ownerId: 0,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-1-3`,
+            position: 4,
+            initialPosition: 4,
+            ownerId: 0,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+        ],
+      },
+
+      {
+        id: 1,
+        score: 0,
+        state: "IDLE",
+        color: "green",
+        pieces: [
+          {
+            id: `player-2-0`,
+            position: 5,
+            initialPosition: 5,
+            ownerId: 1,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-2-1`,
+            position: 6,
+            initialPosition: 6,
+            ownerId: 1,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-2-2`,
+            position: 7,
+            initialPosition: 7,
+            ownerId: 1,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-2-3`,
+            position: 8,
+            initialPosition: 8,
+            ownerId: 1,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+        ],
+      },
+      {
+        id: 2,
+        score: 0,
+        state: "IDLE",
+        color: "blue",
+        pieces: [
+          {
+            id: `player-3-0`,
+            position: 9,
+            initialPosition: 9,
+            ownerId: 2,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-3-1`,
+            position: 10,
+            initialPosition: 10,
+            ownerId: 2,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-3-2`,
+            position: 11,
+            initialPosition: 11,
+            ownerId: 2,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-3-3`,
+            position: 12,
+            initialPosition: 12,
+            ownerId: 2,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+        ],
+      },
+      {
+        id: 3,
+        score: 0,
+        state: "IDLE",
+        color: "yellow",
+        pieces: [
+          {
+            id: `player-4-0`,
+            position: 13,
+            initialPosition: 13,
+            ownerId: 3,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-4-1`,
+            position: 14,
+            initialPosition: 14,
+            ownerId: 3,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-4-2`,
+            position: 15,
+            initialPosition: 15,
+            ownerId: 3,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+          {
+            id: `player-4-3`,
+            position: 16,
+            initialPosition: 16,
+            ownerId: 3,
+            state: "HOME",
+            hasGoneRound: false,
+            distance: 0,
+          },
+        ],
+      },
+    ],
+    playing,
+    currentPlayerId: playing[0],
+    currentMoveNumber: null,
+    currentDieIndex: null,
+    rolledDoubleSix: false,
+    gamePhase: "ROLLING",
+    rollResult: [0, 0, 0],
+  };
 };
 
-function getNextPlayer(currentPlayerId: number, totalPlayers: number = 4) {
-  return (currentPlayerId + 1) % totalPlayers;
+function getNextPlayer(currentPlayerId: number, playing: number[]) {
+  const currentPlayerIndex = playing.findIndex(
+    (playerId) => playerId === currentPlayerId,
+  );
+
+  return playing[(currentPlayerIndex + 1) % playing.length];
 }
 
 function getNextPosition(
@@ -284,7 +312,7 @@ function isPiecePlayable(
   gamePhase: "WAITING" | "ROLLING",
 ): boolean {
   if (gamePhase === "WAITING") {
-    // console.log("It happened because the game phase was waiting");
+    console.log("It happened because the game phase was waiting");
     return false;
   }
   if (!dice || playerId !== currentPiece.ownerId) {
@@ -301,7 +329,7 @@ function isPiecePlayable(
   const diceValues = Array.isArray(dice) ? dice : [dice];
   return diceValues.some((d, i) => {
     if (d <= 0) {
-      // console.log("It happened because thedie was -");
+      console.log("It happened because thedie was -");
       return false;
     }
     if (currentPiece.state === "BOARD") {
@@ -344,22 +372,19 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
       //   });
       const rolledDoubleSix =
         action.payload[0] === 6 && action.payload[1] === 6;
-      let isThereAnyPlayablePiece;
-      state.players
+      const isThereAnyPlayablePiece = state.players
         .find((player) => player.id === state.currentPlayerId)!
-        .pieces.some((piece) => {
-          // console.log(piece, action.payload, currentPlayer.id, state.gamePhase);
-          if (
-            isPiecePlayable(piece, action.payload, currentPlayer.id, "ROLLING")
-          )
-            return (isThereAnyPlayablePiece = true);
-        });
+        .pieces.some((piece) =>
+          isPiecePlayable(piece, action.payload, currentPlayer.id, "ROLLING"),
+        );
+      console.log("is there any piece playable", isThereAnyPlayablePiece);
 
       const shouldSkipTurn = !isThereAnyPlayablePiece;
+      console.log(shouldSkipTurn ? "IDLE" : "PLAYING");
       return {
         ...state,
         currentPlayerId: shouldSkipTurn
-          ? getNextPlayer(state.currentPlayerId)
+          ? getNextPlayer(state.currentPlayerId, state.playing)
           : state.currentPlayerId,
         rollResult: action.payload,
         rolledDoubleSix,
@@ -467,7 +492,6 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         //  send the captured piece to home if any
         if (player.id !== state.currentPlayerId) {
           if (capturedPiece && player.id === capturedPiece[0]) {
-            // console.log(capturedPiece[0], player.id);
             return {
               ...player,
 
@@ -535,16 +559,12 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         !hasPlayerFinishedPlaying ||
         (hasPlayerFinishedPlaying && state.rolledDoubleSix)
           ? state.currentPlayerId
-          : getNextPlayer(state.currentPlayerId);
+          : getNextPlayer(state.currentPlayerId, state.playing);
       const rolledDoubleSix =
         hasPlayerFinishedPlaying && state.rolledDoubleSix
           ? false
           : state.rolledDoubleSix;
-      console.log(
-        rolledDoubleSix,
-        state.rolledDoubleSix,
-        hasPlayerFinishedPlaying,
-      );
+
       // const hasPlayerFinishedPlaying =
       //   state.rollResult[0] == 0 ||
       //   state.rollResult[1] == 0 ||
@@ -556,7 +576,15 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         gamePhase: hasPlayerFinishedPlaying ? "WAITING" : "ROLLING",
         currentMoveNumber: null,
         currentPlayerId: nextPlayerId,
-        players: newPlayers,
+        players: newPlayers.map((player) => {
+          if (player.id === currentPlayer.id) {
+            return {
+              ...player,
+              state: hasPlayerFinishedPlaying ? "IDLE" : "PLAYING",
+            };
+          }
+          return player;
+        }),
         rolledDoubleSix,
       };
     }
@@ -566,10 +594,20 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
 }
 
 function Game() {
+  const [searchParams] = useSearchParams();
+  const numPlayers = searchParams.get("players") || 4;
   const [
-    { players, rollResult, currentMoveNumber, currentPlayerId, gamePhase },
+    {
+      players,
+      playing,
+      rollResult,
+      currentMoveNumber,
+      currentPlayerId,
+      gamePhase,
+    },
     dispatch,
-  ] = useReducer(reducer, initialState);
+  ] = useReducer(reducer, initialState(+numPlayers));
+
   const currentPlayer = useMemo(
     () => players.find((player) => player.id === currentPlayerId),
     [players, currentPlayerId],
@@ -600,112 +638,218 @@ function Game() {
       setIsDiceRolling(true);
       diceBoxRef.current.onRollComplete = (rollResult) => {
         const [die1, die2] = rollResult[0].rolls;
-        // console.log(rollResult);
         dispatch({
           type: "ROLL_DICE",
           payload: [die1.value, die2.value, die1.value + die2.value],
         });
         setIsDiceRolling(false);
-        // console.log(players);
       };
     }
   }
   return (
-    <>
-      <div className="flex justify-around mt-3 flex-wrap">
-        <div className="w-60 h-40 border bg-red-500 flex flex-col justify-between py-4 items-center ">
-          <p className="">
-            {currentPlayerId == 0
-              ? "Red"
-              : currentPlayerId == 1
-                ? "Green"
-                : currentPlayerId == 2
-                  ? "Blue"
-                  : "Yellow"}{" "}
-            player turn
+    <div className="min-h-screen bg-bg text-text flex items-center justify-center gap-6 p-6">
+      {/* ── Left Panel ── */}
+      <div className="w-52 shrink-0 flex flex-col gap-4">
+        {/* Current player */}
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <p className="text-[10px] text-muted uppercase tracking-widest mb-3 font-medium">
+            Current Turn
           </p>
-          <div className=" flex flex-wrap justify-around gap-3">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-5 h-5 rounded-full border-2 border-white/10 shrink-0"
+              style={{
+                backgroundColor: playerColorMap[currentPlayer.color]?.hex,
+                boxShadow: `0 0 12px 0 ${playerColorMap[currentPlayer.color]?.glow}`,
+              }}
+            />
+            <p
+              className="font-display text-2xl font-semibold capitalize"
+              style={{ color: playerColorMap[currentPlayer.color]?.hex }}
+            >
+              {currentPlayer.color}
+            </p>
+          </div>
+          <p className="text-xs text-muted mt-2">
+            {gamePhase === "WAITING"
+              ? "Waiting to roll…"
+              : "Pick a piece to move"}
+          </p>
+        </div>
+
+        {/* Dice */}
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <p className="text-[10px] text-muted uppercase tracking-widest mb-3 font-medium">
+            Dice
+          </p>
+          <div className="grid grid-cols-3 gap-2">
             {rollResult.map((result, dieIndex) => (
               <button
                 key={dieIndex}
-                className="bg-yellow-300 w-15 h-15 "
                 onClick={() =>
                   dispatch({
                     type: "SELECT_NUMBER",
                     payload: { result, dieIndex },
                   })
                 }
+                className={[
+                  "rounded-lg h-12 flex flex-col items-center justify-center gap-0.5 border transition-all duration-150 cursor-pointer",
+                  currentMoveNumber !== null &&
+                  rollResult[dieIndex] === currentMoveNumber
+                    ? "border-accent/60 bg-accent/10 text-accent"
+                    : result > 0
+                      ? "border-border bg-surface-2 text-text hover:border-accent/40"
+                      : "border-border bg-surface-2 text-muted cursor-default",
+                ].join(" ")}
               >
-                {result}
+                <span className="font-display text-lg font-semibold leading-none">
+                  {result > 0 ? result : "–"}
+                </span>
+                <span className="text-[9px] text-muted leading-none">
+                  {dieLabels[dieIndex]}
+                </span>
               </button>
             ))}
           </div>
-          {currentMoveNumber && (
-            <button
-              className="bg-yellow-300 w-15 h-15 mt-5 "
-              // onClick={() =>
-              //   dispatch({ type: "SELECT_NUMBER", payload: result })
-              // }
-            >
-              {currentMoveNumber}
-            </button>
-          )}
-          <button
-            onClick={handleRoll}
-            disabled={isDiceRolling || currentPlayer.state === "PLAYING"}
-            className="w-[80%] h-10 border bg-white"
-          >
-            roll
-          </button>
-        </div>
-        <Board>
-          {players.map((player) =>
-            player.pieces.map((piece, pieceIndex) => {
-              const position =
-                piece.state === "HOME"
-                  ? getInitialPosition(piece.position)
-                  : piece.state === "HOME_STRETCH"
-                    ? getHomeCellPosition(piece.position)
-                    : getCellPosition(piece.position);
 
-              return (
-                <div
-                  key={piece.id}
-                  onClick={() => {
-                    dispatch({
-                      type: "MOVE_PIECE",
-                      payload: { pieceIndex, playerId: player.id },
-                    });
-                  }}
-                  className="relative w-7 h-7  top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 z-20"
-                  style={{
-                    ...position,
-                    // ...getInitialPosition(position),
-                    // ...getCellPosition(position),
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 rounded-full bg-red-700 z-1 border shadow"
-                    style={{
-                      backgroundColor: player.color,
-                    }}
-                  ></div>
-                  {piece.ownerId === currentPlayer.id &&
-                    isPiecePlayable(
-                      piece,
-                      currentMoveNumber || rollResult,
-                      player.id,
-                      gamePhase,
-                    ) && (
-                      <div className="absolute -inset-1 rounded-full animate-spin border-2 border-yellow-400 border-dashed opacity-70 z-0"></div>
-                    )}
-                </div>
-              );
-            }),
+          {currentMoveNumber !== null && (
+            <div className="mt-3 flex items-center gap-2 px-1">
+              <span className="text-xs text-muted">Moving:</span>
+              <span className="font-display text-accent text-lg font-semibold">
+                {currentMoveNumber}
+              </span>
+            </div>
           )}
-        </Board>
+        </div>
+
+        {/* Roll button */}
+        <button
+          onClick={handleRoll}
+          disabled={isDiceRolling || currentPlayer.state === "PLAYING"}
+          className={[
+            "w-full py-3.5 rounded-xl font-display text-lg font-semibold transition-all duration-150",
+            isDiceRolling || currentPlayer.state === "PLAYING"
+              ? "bg-surface-2 border border-border text-muted cursor-not-allowed opacity-50"
+              : "bg-accent text-bg cursor-pointer hover:bg-accent-hover active:scale-95 shadow-accent",
+          ].join(" ")}
+        >
+          {isDiceRolling ? "Rolling…" : "Roll Dice"}
+        </button>
       </div>
-    </>
+
+      {/* ── Board ── */}
+      <Board>
+        {players.map((player) =>
+          player.pieces.map((piece, pieceIndex) => {
+            const position = !playing.includes(piece.ownerId)
+              ? getCellPosition(101)
+              : piece.state === "HOME"
+                ? getInitialPosition(piece.position)
+                : piece.state === "HOME_STRETCH"
+                  ? getHomeCellPosition(piece.position)
+                  : getCellPosition(piece.position);
+
+            return (
+              <div
+                key={piece.id}
+                onClick={() => {
+                  dispatch({
+                    type: "MOVE_PIECE",
+                    payload: { pieceIndex, playerId: player.id },
+                  });
+                }}
+                className="relative w-7 h-7 top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 z-20"
+                style={{ ...position }}
+              >
+                <div
+                  className="absolute inset-0 rounded-full z-10 border-2 border-black/25 shadow-md "
+                  style={{
+                    backgroundColor: player.color,
+                    boxShadow: `0 2px 8px 0 ${playerColorMap[player.color]?.glow}`,
+                  }}
+                />
+                {piece.ownerId === currentPlayer.id &&
+                  isPiecePlayable(
+                    piece,
+                    currentMoveNumber || rollResult,
+                    player.id,
+                    gamePhase,
+                  ) && (
+                    <div className="absolute -inset-1 rounded-full animate-spin border-2 border-accent border-dashed opacity-80 z-0" />
+                  )}
+              </div>
+            );
+          }),
+        )}
+      </Board>
+
+      {/* ── Right Panel — Scores ── */}
+      <div className="w-52 shrink-0 flex flex-col gap-3">
+        <p className="text-[10px] text-muted uppercase tracking-widest font-medium px-1">
+          Scoreboard
+        </p>
+        {players.map((player) => (
+          <div
+            key={player.id}
+            className={[
+              "rounded-xl border bg-surface p-4 flex items-center gap-3 transition-all duration-150",
+              player.id === currentPlayerId
+                ? "border-accent/40 shadow-[0_0_16px_0_rgba(245,197,24,0.08)]"
+                : "border-border",
+            ].join(" ")}
+          >
+            <div
+              className="w-4 h-4 rounded-full border border-white/10 shrink-0"
+              style={{
+                backgroundColor: playerColorMap[player.color]?.hex,
+                boxShadow: `0 0 8px 0 ${playerColorMap[player.color]?.glow}`,
+              }}
+            />
+            <p className="font-display text-base capitalize flex-1">
+              {player.color}
+            </p>
+            <p className="font-display text-xl text-accent font-semibold">
+              {player.score}
+            </p>
+          </div>
+        ))}
+
+        {/* Pieces progress */}
+        <div className="rounded-xl border border-border bg-surface p-4 mt-1">
+          <p className="text-[10px] text-muted uppercase tracking-widest mb-3 font-medium">
+            Pieces Home
+          </p>
+          {players.map((player) => (
+            <div
+              key={player.id}
+              className="flex items-center gap-2 mb-2 last:mb-0"
+            >
+              <div
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ backgroundColor: playerColorMap[player.color]?.hex }}
+              />
+              <div className="flex gap-1">
+                {player.pieces.map((p) => (
+                  <div
+                    key={p.id}
+                    className={[
+                      "w-2.5 h-2.5 rounded-full border border-white/10 transition-opacity duration-300",
+                      p.state === "FINISHED" ? "opacity-100" : "opacity-20",
+                    ].join(" ")}
+                    style={{
+                      backgroundColor: playerColorMap[player.color]?.hex,
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted ml-auto">
+                {player.pieces.filter((p) => p.state === "FINISHED").length}/4
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 

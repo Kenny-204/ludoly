@@ -9,6 +9,11 @@ export function getCellPosition(index: number) {
       gridRowEnd: 9,
     };
   }
+  if (index == 101) {
+    return {
+      display: "none",
+    };
+  }
   // So like what happened is i mistakenly arranged it in the wrong direction so i was lazy to rearrange it so i just reversed the direction if you're kind enough help me proper it
   const reversedIndex = index === 0 ? 0 : 52 - index;
 
