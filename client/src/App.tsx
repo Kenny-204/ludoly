@@ -3,8 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "./features/Home/HomePage.tsx";
 import { OnlinePage } from "./features/Online/OnlinePage.tsx";
 import { PlayerSelectPage } from "./features/PassAndPlay/PlayerSelectPage.tsx";
-import Game from "./features/ludoGame/game.tsx";
-
+import Game from "./features/ludoGame/Game.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
