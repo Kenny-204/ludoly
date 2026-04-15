@@ -1,0 +1,27 @@
+{
+  "name": "ludoly-server",
+  "version": "1.0.0",
+  "description": "The server for my ludoly game",
+  "license": "ISC",
+  "author": "Kehinde Giwa",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1",
+    "validator": "^13.15.35"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
