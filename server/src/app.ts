@@ -1,5 +1,5 @@
 import express from "express";
-import globalErrorHandler  from '../controller/errorController.ts'
+import globalErrorHandler  from './core/middlewares/error.middleware.js'
 
 const app = express();
 
