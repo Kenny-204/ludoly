@@ -1,5 +1,5 @@
 import app from "./app.js";
-import config from "./config/config.ts";
+import config from "./core/config/config.js";
 import mongoose from "mongoose";
 
 const { port, DB } = config;

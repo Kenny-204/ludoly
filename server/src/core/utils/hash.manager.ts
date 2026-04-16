@@ -5,8 +5,9 @@ class HashManager {
   public async hashPassword(plainPassword: string) {
     return await hash(plainPassword);
   }
-  public comparePassword(input: string, password: string) {}
+  public async comparePassword(plainPassword: string, hashedPassword: string) {
+    return await verify(hashedPassword, plainPassword);
+  }
 }
 
-
-export const hashManager = new HashManager()
+export const hashManager = new HashManager();

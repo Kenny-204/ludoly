@@ -1,6 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import AppError from "../errors/application.error";
-
+import type { NextFunction, Request, Response } from "express";
+import AppError from "../errors/application.error.js";
 
 function sendErrorDev(err: AppError, res: Response) {
   res.status(err.statusCode).json({
