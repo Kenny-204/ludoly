@@ -11,3 +11,6 @@ userRouter.get(
   catchAsync(authService.protect),
   catchAsync(userService.getUser),
 );
+
+
+export default userRouter
