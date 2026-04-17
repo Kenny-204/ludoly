@@ -2,6 +2,7 @@ import type { Document } from "mongoose";
 import User from "../../core/models/user.model.js";
 import catchAsync from "../../core/utils/catchAsync.js";
 import AppError from "../../core/errors/application.error.js";
+import type { NextFunction, Request, Response } from "express";
 
 type CreateUserInput = {
   username: string;
@@ -37,6 +38,14 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
+  public async getUser(req: Request, res: Response, next: NextFunction) {
+    const user = req.user;
+
+    res.status(200).json({
+      status: "success",
+      user,
+    });
   }
 }
 
