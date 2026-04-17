@@ -4,6 +4,7 @@ import AppError from "../../core/errors/application.error.js";
 import { Jwt } from "../../core/utils/jwt.js";
 import config from "../../core/config/config.js";
 import { hashManager } from "../../core/utils/hash.manager.js";
+import { cookieManager } from "../../core/utils/cookie.manager.js";
 
 class AuthService {
   private tokens;
@@ -20,10 +21,10 @@ class AuthService {
 
     const createdUser = await userService.createUser(newUser);
     const token = this.tokens.signToken(String(createdUser._id));
+    cookieManager.sendCookie("jwt", token, res);
 
     res.status(201).json({
       status: "success",
-      token,
       createdUser,
     });
   };
@@ -37,16 +38,39 @@ class AuthService {
 
     const user = await userService.findUser(email);
 
-    if (!user || !(await hashManager.comparePassword( password,user.password))) {
+    if (
+      !user ||
+      !(await hashManager.comparePassword(password, user.password))
+    ) {
       return next(new AppError("Email or password is incorrect, ", 401));
     }
 
     const token = this.tokens.signToken(String(user._id));
-
+    cookieManager.sendCookie("jwt", token, res);
     res.status(200).json({
       status: "success",
-      token,
     });
+  };
+
+  public protect = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return next(
+        new AppError("You are not logged in. Login to gain access", 401),
+      );
+    }
+
+    const decoded = await this.tokens.decodeToken(token);
+    const currentUser = await userService.findUser(decoded._id);
+
+    if (!currentUser) {
+      return next(new AppError("There is no user for this token", 401));
+    }
+
+    req.user = currentUser;
+
+    next();
   };
 }
 

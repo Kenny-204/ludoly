@@ -9,7 +9,7 @@ type CreateUserInput = {
   passwordConfirm: string;
   email: string;
 };
-type UserDocument = Document & CreateUserInput;
+export type UserDocument = Document & CreateUserInput;
 
 class UserService {
   public async createUser(newUser: CreateUserInput): Promise<UserDocument> {
