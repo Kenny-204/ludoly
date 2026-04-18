@@ -52,26 +52,7 @@ class AuthController {
     });
   };
 
-  public protect = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return next(
-        new AppError("You are not logged in. Login to gain access", 401),
-      );
-    }
-
-    const decoded = await this.tokens.decodeToken(token);
-    const currentUser = await userService.findUserById(decoded.id);
-
-    if (!currentUser) {
-      return next(new AppError("There is no user for this token", 401));
-    }
-
-    req.user = currentUser;
-
-    next();
-  };
+ 
 }
 
 export const authController = new AuthController();

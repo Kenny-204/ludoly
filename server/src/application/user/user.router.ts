@@ -1,14 +1,13 @@
 import express from "express";
-import authRouter from "../auth/auth.router.js";
-import { authController } from "../auth/auth.controller.js";
 import catchAsync from "../../core/utils/catchAsync.js";
 import { userController } from "./user.controller.js";
+import { authMiddleware } from "../../core/middlewares/auth.middleware.js";
 
 const userRouter = express.Router();
 
 userRouter.get(
   "/me",
-  catchAsync(authController.protect),
+  catchAsync(authMiddleware.protect),
   catchAsync(userController.getUser),
 );
 
