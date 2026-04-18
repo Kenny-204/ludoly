@@ -31,7 +31,7 @@ class UserService {
     }
   }
 
-  public async findUser(email: string): Promise<UserDocument | null> {
+  public async findUserByEmail(email: string): Promise<UserDocument | null> {
     try {
       const user = await User.findOne({ email }).select("+password");
       return user;
@@ -39,13 +39,14 @@ class UserService {
       throw err;
     }
   }
-  public async getUser(req: Request, res: Response, next: NextFunction) {
-    const user = req.user;
 
-    res.status(200).json({
-      status: "success",
-      user,
-    });
+  public async findUserById(id: string) {
+    try {
+      const user = await User.findById("id");
+      return user;
+    } catch (err) {
+      throw err;
+    }
   }
 }
 

@@ -1,16 +1,15 @@
 import express from "express";
 import authRouter from "../auth/auth.router.js";
-import { authService } from "../auth/auth.service.js";
-import { userService } from "./user.service.js";
+import { authController } from "../auth/auth.controller.js";
 import catchAsync from "../../core/utils/catchAsync.js";
+import { userController } from "./user.controller.js";
 
 const userRouter = express.Router();
 
 userRouter.get(
   "/me",
-  catchAsync(authService.protect),
-  catchAsync(userService.getUser),
+  catchAsync(authController.protect),
+  catchAsync(userController.getUser),
 );
 
-
-export default userRouter
+export default userRouter;

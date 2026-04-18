@@ -3,14 +3,14 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { authService } from "./auth.service.js";
+import { authController } from "./auth.controller.js";
 import catchAsync from "../../core/utils/catchAsync.js";
 import { userService } from "../user/user.service.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/signup", catchAsync(authService.signup));
-authRouter.post("/login", catchAsync(authService.login));
+authRouter.post("/signup", catchAsync(authController.signup));
+authRouter.post("/login", catchAsync(authController.login));
 
 
 export default authRouter;

@@ -6,7 +6,7 @@ import config from "../../core/config/config.js";
 import { hashManager } from "../../core/utils/hash.manager.js";
 import { cookieManager } from "../../core/utils/cookie.manager.js";
 
-class AuthService {
+class AuthController {
   private tokens;
   constructor() {
     this.tokens = new Jwt(config.JWT_SECRET);
@@ -36,7 +36,7 @@ class AuthService {
       return next(new AppError("Please provide your email and password", 401));
     }
 
-    const user = await userService.findUser(email);
+    const user = await userService.findUserByEmail(email);
 
     if (
       !user ||
@@ -62,7 +62,7 @@ class AuthService {
     }
 
     const decoded = await this.tokens.decodeToken(token);
-    const currentUser = await userService.findUser(decoded._id);
+    const currentUser = await userService.findUserById(decoded._id);
 
     if (!currentUser) {
       return next(new AppError("There is no user for this token", 401));
@@ -74,4 +74,4 @@ class AuthService {
   };
 }
 
-export const authService = new AuthService();
+export const authController = new AuthController();
