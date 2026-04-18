@@ -62,7 +62,7 @@ class AuthController {
     }
 
     const decoded = await this.tokens.decodeToken(token);
-    const currentUser = await userService.findUserById(decoded._id);
+    const currentUser = await userService.findUserById(decoded.id);
 
     if (!currentUser) {
       return next(new AppError("There is no user for this token", 401));

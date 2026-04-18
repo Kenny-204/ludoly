@@ -42,7 +42,7 @@ class UserService {
 
   public async findUserById(id: string) {
     try {
-      const user = await User.findById("id");
+      const user = await User.findById(id);
       return user;
     } catch (err) {
       throw err;
