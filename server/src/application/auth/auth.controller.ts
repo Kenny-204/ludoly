@@ -9,7 +9,7 @@ import { cookieManager } from "../../core/utils/cookie.manager.js";
 class AuthController {
   private tokens;
   constructor() {
-    this.tokens = new Jwt(config.JWT_SECRET);
+    this.tokens = new Jwt(config.auth.JWT_SECRET);
   }
   public signup = async (req: Request, res: Response, next: NextFunction) => {
     const newUser = {

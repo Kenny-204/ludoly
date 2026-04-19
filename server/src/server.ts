@@ -2,9 +2,8 @@ import app from "./app.js";
 import config from "./core/config/config.js";
 import mongoose from "mongoose";
 
-const { port, DB } = config;
-mongoose.connect(DB).then((conn) => {});
+mongoose.connect(config.db.db_string).then((conn) => {});
 
-const server = app.listen(port, () =>
-  console.log("server running on port ", port),
+const server = app.listen(config.app.port, () =>
+  console.log("server running on port ", config.app.port),
 );

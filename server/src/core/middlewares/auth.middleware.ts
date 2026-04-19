@@ -6,7 +6,7 @@ import { userService } from "../../application/user/user.service.js";
 
 class AuthMiddleware {
   public protect = async (req: Request, res: Response, next: NextFunction) => {
-    const jwt = new Jwt(config.JWT_SECRET);
+    const jwt = new Jwt(config.auth.JWT_SECRET);
     const token = req.cookies.jwt;
 
     if (!token) {
