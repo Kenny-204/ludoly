@@ -354,6 +354,8 @@ function isPiecePlayable(
   });
 }
 
+// TODO: move the reducer logic to a custom hook
+
 function reducer(state: gameStateType, action: actionType): gameStateType {
   switch (action.type) {
     case "ROLL_DICE": {
@@ -361,15 +363,6 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         (player) => player.id === state.currentPlayerId,
       )!;
 
-      // const diceContainsSix =
-      //   action.payload[0] === 6 || action.payload[1] === 6;
-
-      // let isPieceOnBoard;
-      // state.players
-      //   .find((player) => player.id === state.currentPlayerId)!
-      //   .pieces.some((piece) => {
-      //     if (piece.state === "BOARD") return (isPieceOnBoard = true);
-      //   });
       const rolledDoubleSix =
         action.payload[0] === 6 && action.payload[1] === 6;
       const isThereAnyPlayablePiece = state.players
@@ -441,7 +434,6 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
           }
         });
       });
-      // console.log(positionMap);
 
       const totalRollSelected = state.currentDieIndex == 2;
 
