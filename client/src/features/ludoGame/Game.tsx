@@ -750,7 +750,7 @@ function Game() {
                   : getCellPosition(piece.position);
 
             return (
-              <div
+              <button
                 key={piece.id}
                 onClick={() => {
                   dispatch({
@@ -758,7 +758,7 @@ function Game() {
                     payload: { pieceIndex, playerId: player.id },
                   });
                 }}
-                className="relative w-7 h-7 top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 z-20"
+                className="relative w-7 h-7 top-0.5 left-1 col-start-9 col-end-10 row-start-1 row-end-2 z-20 bg-transparent border-none p-0 cursor-pointer"
                 style={{ ...position }}
               >
                 <div
@@ -777,7 +777,7 @@ function Game() {
                   ) && (
                     <div className="absolute -inset-1 rounded-full animate-spin border-2 border-accent border-dashed opacity-80 z-0" />
                   )}
-              </div>
+              </button>
             );
           }),
         )}

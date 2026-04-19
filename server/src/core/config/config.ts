@@ -27,7 +27,7 @@ const config = Object.freeze({
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "",
   },
   redis: {
-    uri: "",
+    uri: process.env.REDIS_URI || "",
   },
 });
 export default config;
