@@ -5,11 +5,12 @@ import AppError from "./core/errors/application.error.js";
 import userRouter from "./application/user/user.router.js";
 import cookieParser from "cookie-parser";
 import { redisClient } from "./core/providers/redis.js";
+import config from "./core/config/config.js";
 
 const app = express();
 
 redisClient.connect();
-console.log(redisClient);
+// console.log(redisClient);
 
 app.use(express.json());
 app.use(cookieParser());

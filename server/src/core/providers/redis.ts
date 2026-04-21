@@ -1,7 +1,7 @@
 import { Redis } from "ioredis";
 import config from "../config/config.js";
 
- class RedisClient {
+class RedisClient {
   private client!: Redis;
 
   async connect() {
@@ -11,8 +11,8 @@ import config from "../config/config.js";
       console.log("Connected successfully to redis"),
     );
 
-    this.client.on("error", () =>
-      console.log("There was an error connecting to redis"),
+    this.client.on("error", (err) =>
+      console.log("There was an error connecting to redis", err),
     );
   }
 
@@ -23,10 +23,13 @@ import config from "../config/config.js";
   async get(key: string) {
     return this.client.get(key);
   }
+  async exists(key: string) {
+    return this.client.exists(key);
+  }
 
   async expire(key: string, seconds: number) {
     return this.client.expire(key, seconds);
   }
 }
 
-export const redisClient = new RedisClient()
+export const redisClient = new RedisClient();

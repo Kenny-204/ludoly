@@ -7,6 +7,7 @@ import {
   getInitialPosition,
 } from "../../utils/board";
 import { useSearchParams } from "react-router-dom";
+import { io } from "socket.io-client";
 
 // ── Style-only constants ────────────────────────────────────────
 const playerColorMap: Record<string, { glow: string; hex: string }> = {
@@ -610,6 +611,10 @@ function Game() {
   const [isDiceRolling, setIsDiceRolling] = useState(false);
 
   useEffect(function () {
+    const socket = io("http://localhost:3000");
+    socket.on("connect", () => {
+      console.log("connected", socket.id);
+    });
     const initDice = async () => {
       const box = new DiceBox({
         assetPath: "/assets/",
