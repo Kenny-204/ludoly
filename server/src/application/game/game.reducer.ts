@@ -10,7 +10,7 @@ type playerState = "PLAYING" | "IDLE" | "WON";
 
 type piece = {
   id: string;
-  ownerId: number;
+  ownerId: string;
   position: number;
   state: pieceState;
   distance: number;
@@ -19,10 +19,12 @@ type piece = {
 };
 
 type player = {
-  id: number;
+  id: string;
   color: string;
   state: playerState;
-
+  playerNumber: number;
+  playerIndex: number;
+  isReady: boolean;
   score: number;
   pieces: piece[];
 };
@@ -32,16 +34,16 @@ type actionType =
   | { type: "SELECT_NUMBER"; payload: { result: number; dieIndex: number } }
   | {
       type: "MOVE_PIECE";
-      payload: { pieceIndex: number; playerId: number };
+      payload: { pieceIndex: number; playerId: string };
     };
 
 type gameStateType = {
-  currentPlayerId: number;
+  currentPlayerId: string;
   players: player[];
   rollResult: number[];
   rolledDoubleSix: boolean;
   currentMoveNumber: number | null;
-  playing: number[];
+  playing: string[];
   currentDieIndex: number | null;
   gamePhase: "WAITING" | "ROLLING";
 };
@@ -70,8 +72,8 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         rollResult: action.payload,
         rolledDoubleSix,
         gamePhase: shouldSkipTurn ? "WAITING" : "ROLLING",
-        players: state.players.map((player, index) => {
-          if (index !== state.currentPlayerId) return player;
+        players: state.players.map((player) => {
+          if (player.id !== state.currentPlayerId) return player;
           return {
             ...player,
             state: shouldSkipTurn ? "IDLE" : "PLAYING",
@@ -111,8 +113,8 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
 
       // compute the new values
 
-      const positionMap: Record<number, number[][]> = {};
-      state.players.forEach((player) => {
+      const positionMap: Record<number, [string, number][]> = {};
+      state.players.forEach((player, playerIndex) => {
         player.pieces.forEach((piece, pieceIndex) => {
           if (piece.state === "BOARD") {
             if (!positionMap[piece.position]) {
@@ -135,13 +137,13 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
       // (where the piece is suppposed to go)
       const newPosition =
         currentPiece.state === "HOME"
-          ? getStartPosition(action.payload.playerId)
+          ? getStartPosition(currentPlayer.playerNumber)
           : currentPiece.distance + state.currentMoveNumber! === 56
             ? 100
             : getNextPosition(
                 currentPiece.position,
                 currentPiece.distance,
-                action.payload.playerId,
+                currentPlayer.playerNumber,
                 state.currentMoveNumber!,
               );
       // (check if it's in the home stretch)

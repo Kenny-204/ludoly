@@ -46,11 +46,14 @@ export function HomePage() {
         </p>
 
         <div className="w-full max-w-xs space-y-3">
-          <Link to="/online" className="block">
-            <Button variant="primary" size="lg" fullWidth>
+          <div className="relative">
+            <Button disabled size="lg" fullWidth>
               Play Online
             </Button>
-          </Link>
+            <span className="absolute -top-2 -right-2">
+              <Badge variant="info">In Progress</Badge>
+            </span>
+          </div>
 
           <Link to="player-select" className="block">
             <Button variant="secondary" size="lg" fullWidth>

@@ -24,7 +24,7 @@ type playerState = "PLAYING" | "IDLE" | "WON";
 
 type piece = {
   id: string;
-  ownerId: number;
+  ownerId: string;
   position: number;
   state: pieceState;
   distance: number;
@@ -33,10 +33,10 @@ type piece = {
 };
 
 type player = {
-  id: number;
+  id: string;
   color: string;
   state: playerState;
-
+  playerIndex: number;
   score: number;
   pieces: piece[];
 };
@@ -46,16 +46,16 @@ type actionType =
   | { type: "SELECT_NUMBER"; payload: { result: number; dieIndex: number } }
   | {
       type: "MOVE_PIECE";
-      payload: { pieceIndex: number; playerId: number };
+      payload: { pieceIndex: number; playerId: string };
     };
 
 type gameStateType = {
-  currentPlayerId: number;
+  currentPlayerId: string;
   players: player[];
   rollResult: number[];
   rolledDoubleSix: boolean;
   currentMoveNumber: number | null;
-  playing: number[];
+  playing: string[];
   currentDieIndex: number | null;
   gamePhase: "WAITING" | "ROLLING";
 };
@@ -79,25 +79,26 @@ function getStartPosition(playerIndex: number) {
 const initialState = function (numPlayers: number): gameStateType {
   const playing =
     numPlayers === 2
-      ? [0, 3]
+      ? ["0", "3"]
       : numPlayers === 3
-        ? [0, 1, 2]
+        ? ["0", "1", "2"]
         : numPlayers === 4
-          ? [0, 1, 2, 3]
-          : [0];
+          ? ["0", "1", "2", "3"]
+          : ["0"];
 
   return {
     players: [
       {
-        id: 0,
+        id: "0",
         score: 0,
+        playerIndex: 0,
         state: "IDLE",
         color: "red",
         pieces: [
           {
             id: `player-1-0`,
             position: 1,
-            ownerId: 0,
+            ownerId: "0",
             initialPosition: 1,
             state: "HOME",
             hasGoneRound: false,
@@ -107,7 +108,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-1-1`,
             position: 2,
             initialPosition: 2,
-            ownerId: 0,
+            ownerId: "0",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -116,7 +117,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-1-2`,
             position: 3,
             initialPosition: 3,
-            ownerId: 0,
+            ownerId: "0",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -125,7 +126,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-1-3`,
             position: 4,
             initialPosition: 4,
-            ownerId: 0,
+            ownerId: "0",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -134,8 +135,9 @@ const initialState = function (numPlayers: number): gameStateType {
       },
 
       {
-        id: 1,
+        id: "1",
         score: 0,
+        playerIndex: 1,
         state: "IDLE",
         color: "green",
         pieces: [
@@ -143,7 +145,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-2-0`,
             position: 5,
             initialPosition: 5,
-            ownerId: 1,
+            ownerId: "1",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -152,7 +154,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-2-1`,
             position: 6,
             initialPosition: 6,
-            ownerId: 1,
+            ownerId: "1",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -161,7 +163,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-2-2`,
             position: 7,
             initialPosition: 7,
-            ownerId: 1,
+            ownerId: "1",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -170,7 +172,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-2-3`,
             position: 8,
             initialPosition: 8,
-            ownerId: 1,
+            ownerId: "1",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -178,8 +180,9 @@ const initialState = function (numPlayers: number): gameStateType {
         ],
       },
       {
-        id: 2,
+        id: "2",
         score: 0,
+        playerIndex: 2,
         state: "IDLE",
         color: "blue",
         pieces: [
@@ -187,7 +190,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-3-0`,
             position: 9,
             initialPosition: 9,
-            ownerId: 2,
+            ownerId: "2",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -196,7 +199,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-3-1`,
             position: 10,
             initialPosition: 10,
-            ownerId: 2,
+            ownerId: "2",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -205,7 +208,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-3-2`,
             position: 11,
             initialPosition: 11,
-            ownerId: 2,
+            ownerId: "2",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -214,7 +217,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-3-3`,
             position: 12,
             initialPosition: 12,
-            ownerId: 2,
+            ownerId: "2",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -222,8 +225,9 @@ const initialState = function (numPlayers: number): gameStateType {
         ],
       },
       {
-        id: 3,
+        id: "3",
         score: 0,
+        playerIndex: 3,
         state: "IDLE",
         color: "yellow",
         pieces: [
@@ -231,7 +235,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-4-0`,
             position: 13,
             initialPosition: 13,
-            ownerId: 3,
+            ownerId: "3",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -240,7 +244,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-4-1`,
             position: 14,
             initialPosition: 14,
-            ownerId: 3,
+            ownerId: "3",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -249,7 +253,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-4-2`,
             position: 15,
             initialPosition: 15,
-            ownerId: 3,
+            ownerId: "3",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -258,7 +262,7 @@ const initialState = function (numPlayers: number): gameStateType {
             id: `player-4-3`,
             position: 16,
             initialPosition: 16,
-            ownerId: 3,
+            ownerId: "3",
             state: "HOME",
             hasGoneRound: false,
             distance: 0,
@@ -276,7 +280,7 @@ const initialState = function (numPlayers: number): gameStateType {
   };
 };
 
-function getNextPlayer(currentPlayerId: number, playing: number[]) {
+function getNextPlayer(currentPlayerId: string, playing: string[]) {
   const currentPlayerIndex = playing.findIndex(
     (playerId) => playerId === currentPlayerId,
   );
@@ -287,21 +291,21 @@ function getNextPlayer(currentPlayerId: number, playing: number[]) {
 function getNextPosition(
   currentPosition: number,
   distance: number,
-  playerId: number,
+  playerIndex: number,
   currentMoveNumber: number,
   totalPosition: number = 51,
 ) {
   const shouldEnterHomeStretch = distance + currentMoveNumber > totalPosition;
-  if (playerId === 0 && shouldEnterHomeStretch) {
+  if (playerIndex === 0 && shouldEnterHomeStretch) {
     return ((distance + currentMoveNumber) % totalPosition) + 7;
   }
-  if (playerId === 1 && shouldEnterHomeStretch) {
+  if (playerIndex === 1 && shouldEnterHomeStretch) {
     return ((distance + currentMoveNumber) % totalPosition) + 2;
   }
-  if (playerId === 2 && shouldEnterHomeStretch) {
+  if (playerIndex === 2 && shouldEnterHomeStretch) {
     return ((distance + currentMoveNumber) % totalPosition) + 12;
   }
-  if (playerId === 3 && shouldEnterHomeStretch) {
+  if (playerIndex === 3 && shouldEnterHomeStretch) {
     return ((distance + currentMoveNumber) % totalPosition) + 17;
   } else return (currentPosition + currentMoveNumber) % totalPosition;
 }
@@ -309,7 +313,7 @@ function getNextPosition(
 function isPiecePlayable(
   currentPiece: piece,
   dice: number | number[] | null,
-  playerId: number,
+  playerId: string,
   gamePhase: "WAITING" | "ROLLING",
 ): boolean {
   if (gamePhase === "WAITING") {
@@ -383,8 +387,8 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
         rollResult: action.payload,
         rolledDoubleSix,
         gamePhase: shouldSkipTurn ? "WAITING" : "ROLLING",
-        players: state.players.map((player, index) => {
-          if (index !== state.currentPlayerId) return player;
+        players: state.players.map((player) => {
+          if (player.id !== state.currentPlayerId) return player;
           return {
             ...player,
             state: shouldSkipTurn ? "IDLE" : "PLAYING",
@@ -424,7 +428,7 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
 
       // compute the new values
 
-      const positionMap: Record<number, number[][]> = {};
+      const positionMap: Record<number, [string, number][]> = {};
       state.players.forEach((player) => {
         player.pieces.forEach((piece, pieceIndex) => {
           if (piece.state === "BOARD") {
@@ -448,13 +452,13 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
       // (where the piece is suppposed to go)
       const newPosition =
         currentPiece.state === "HOME"
-          ? getStartPosition(action.payload.playerId)
+          ? getStartPosition(currentPlayer.playerIndex)
           : currentPiece.distance + state.currentMoveNumber! === 56
             ? 100
             : getNextPosition(
                 currentPiece.position,
                 currentPiece.distance,
-                action.payload.playerId,
+                currentPlayer.playerIndex,
                 state.currentMoveNumber!,
               );
       // (check if it's in the home stretch)
