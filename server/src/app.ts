@@ -6,10 +6,12 @@ import userRouter from "./application/user/user.router.js";
 import cookieParser from "cookie-parser";
 import { redisClient } from "./core/providers/redis.js";
 import config from "./core/config/config.js";
+import { WebSocketManager } from "./sockets/ws.server.js";
 
 const app = express();
 
 redisClient.connect();
+// const webSocketManager = new WebSocketManager()
 // console.log(redisClient);
 
 app.use(express.json());

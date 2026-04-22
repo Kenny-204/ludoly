@@ -16,8 +16,7 @@ export type player = {
   id: string;
   color: string;
   state: playerState;
-  playerNumber:number;
-  playerIndex:number;
+  playerIndex: number;
   isReady: boolean;
   score: number;
   pieces: piece[];
@@ -28,13 +27,14 @@ export type actionType =
   | { type: "SELECT_NUMBER"; payload: { result: number; dieIndex: number } }
   | {
       type: "MOVE_PIECE";
-      payload: { pieceIndex: number; playerId: number };
+      payload: { pieceIndex: number; playerId: string };
     };
 
 export type gameStateType = {
   currentPlayerId: string | undefined;
   players: player[];
   numPlayers: number;
+  state: "WAITING" | "IN_PROGRESS";
   rollResult: number[];
   rolledDoubleSix: boolean;
   currentMoveNumber: number | null;

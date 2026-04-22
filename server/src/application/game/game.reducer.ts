@@ -48,7 +48,7 @@ type gameStateType = {
   gamePhase: "WAITING" | "ROLLING";
 };
 
-function reducer(state: gameStateType, action: actionType): gameStateType {
+export default function gameReducer(state: gameStateType, action: actionType): gameStateType {
   switch (action.type) {
     case "ROLL_DICE": {
       const currentPlayer = state.players.find(

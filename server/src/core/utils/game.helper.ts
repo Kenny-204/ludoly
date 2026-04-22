@@ -309,18 +309,11 @@ export class PlayerClass implements player {
   public state: playerState;
   public color: color;
   public playerIndex: number;
-  public playerNumber: number;
   public isReady: boolean;
   public pieces: PieceClass[];
 
-  constructor(data: {
-    playerId: string;
-    color: color;
-    playerNumber: number;
-    playerIndex: number;
-  }) {
+  constructor(data: { playerId: string; color: color; playerIndex: number }) {
     this.isReady = false;
-    this.playerNumber = data.playerNumber;
     this.id = data.playerId;
     this.playerIndex = data.playerIndex;
     this.color = data.color;
@@ -332,11 +325,11 @@ export class PlayerClass implements player {
       (_, i) =>
         new PieceClass(
           `${this.id}-${i}`,
-          data.playerNumber == 1
+          data.playerIndex == 1
             ? i + 1
-            : data.playerNumber === 2
+            : data.playerIndex === 2
               ? i + 5
-              : data.playerNumber === 3
+              : data.playerIndex === 3
                 ? i + 9
                 : i + 13,
           this.id,
@@ -370,6 +363,7 @@ export function createInitialGameState(numPlayers: number): gameStateType {
     currentPlayerId: undefined,
     currentMoveNumber: null,
     currentDieIndex: null,
+    state: "WAITING",
     rolledDoubleSix: false,
     gamePhase: "ROLLING",
     rollResult: [0, 0, 0],
@@ -377,11 +371,11 @@ export function createInitialGameState(numPlayers: number): gameStateType {
   };
 }
 
-export function getPlayerColor(playerNumber: number): color {
-  if (playerNumber === 1) return "red";
-  if (playerNumber === 2) return "yellow";
-  if (playerNumber === 3) return "green";
-  if (playerNumber === 4) return "blue";
+export function getPlayerColor(playerIndex: number): color {
+  if (playerIndex === 1) return "red";
+  if (playerIndex === 2) return "yellow";
+  if (playerIndex === 3) return "green";
+  if (playerIndex === 4) return "blue";
   return "red";
 }
 
