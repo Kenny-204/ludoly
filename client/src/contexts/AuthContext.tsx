@@ -37,21 +37,26 @@ export function useAuth() {
   return context;
 }
 
+async function getUserData() {
+  const req = await fetch(`${config.backend.API_URL}/users/me`, {
+    credentials: "include",
+  });
+  if (!req.ok) {
+    return null;
+  }
+
+  const data = await req.json();
+  return data.user;
+}
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<user | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(function () {
     async function fetchUser() {
-      const req = await fetch(`${config.backend.API_URL}/users/me`, {
-        credentials: "include",
-      });
-      if (!req.ok) {
-        setCurrentUser(null);
-        return;
-      }
-
-      const data = await req.json();
-      setCurrentUser(data.user);
+      const user = await getUserData();
+      setCurrentUser(user);
+      setLoading(false);
     }
     fetchUser();
   }, []);
@@ -67,6 +72,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(data),
     });
 
@@ -77,7 +83,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     const responseBody = await res.json();
     const user = responseBody.createdUser;
-   
+
     const newUser = {
       _id: user._id,
       email: user.email,
@@ -93,6 +99,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(data),
     });
 
@@ -101,16 +108,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(error.message);
     }
 
-    const responseBody = await res.json();
-    const user = responseBody.user;
-
-    const newUser = {
-      _id: user._id,
-      email: user.email,
-      username: user.username,
-    };
-
-    setCurrentUser(newUser);
+    const user = await getUserData();
+    setCurrentUser(user);
   }
 
   async function logout() {
@@ -133,5 +132,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: currentUser !== null,
     logout,
   };
-  return <authContext.Provider value={value}>{children}</authContext.Provider>;
+  return (
+    <authContext.Provider value={value}>
+      {" "}
+      {!loading && children}
+    </authContext.Provider>
+  );
 }

@@ -8,6 +8,7 @@ import SocketProvider from "./contexts/socket.tsx";
 import Login from "./features/auth/Login.tsx";
 import Signup from "./features/auth/Signup.tsx";
 import AuthProvider from "./contexts/AuthContext.tsx";
+import { Profile } from "./features/Profile/Profile.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
   {
     path: "/online",
     element: <OnlinePage />,
+  },
+
+  {
+    path: "/profile",
+    element: <Profile />,
   },
   {
     path: "/player-select",

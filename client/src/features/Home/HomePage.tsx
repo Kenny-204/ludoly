@@ -32,16 +32,16 @@ export function HomePage() {
           </>
         )}
         {currentUser && (
-          <div className="flex items-center gap-2">
+          <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
               <span className="font-display text-sm font-semibold text-bg leading-none">
-                {currentUser.username[0]}
+                {currentUser.username[0].toUpperCase()}
               </span>
             </div>
             <span className="text-sm font-medium text-text">
               {currentUser.username}
             </span>
-          </div>
+          </Link>
         )}
       </div>
 
