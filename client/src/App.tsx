@@ -2,6 +2,8 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "./features/Home/HomePage.tsx";
 import { OnlinePage } from "./features/Online/OnlinePage.tsx";
+import { CreateRoomPage } from "./features/Online/CreateRoomPage.tsx";
+import { JoinRoomPage } from "./features/Online/JoinRoomPage.tsx";
 import { PlayerSelectPage } from "./features/PassAndPlay/PlayerSelectPage.tsx";
 import Game from "./features/ludoGame/Game.tsx";
 import SocketProvider from "./contexts/socket.tsx";
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
   {
     path: "/online",
     element: <OnlinePage />,
+  },
+  {
+    path: "/online/create",
+    element: <CreateRoomPage />,
+  },
+  {
+    path: "/online/join",
+    element: <JoinRoomPage />,
   },
 
   {

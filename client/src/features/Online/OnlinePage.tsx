@@ -1,14 +1,10 @@
-import { Button } from "../../design-system/Button";
+import { useNavigate } from "react-router-dom";
 import { Card } from "../../design-system/Card";
 import { BackButton } from "../../components/BackButton";
 // import { useSocket } from "../../contexts/socket";
 
 export function OnlinePage() {
-  // const { socket } = useSocket();
-
-  // function handleCreateRoom() {
-  //   socket?.emit("create-room", { playerId: "player1", numPlayers: 2 });
-  // }
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12">
@@ -36,7 +32,7 @@ export function OnlinePage() {
         <div className="space-y-3">
           <Card
             hoverable
-            onClick={() => {}}
+            onClick={() => navigate("/online/create")}
             className="p-5 flex items-center gap-4"
           >
             <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
@@ -77,7 +73,7 @@ export function OnlinePage() {
 
           <Card
             hoverable
-            onClick={() => {}}
+            onClick={() => navigate("/online/join")}
             className="p-5 flex items-center gap-4"
           >
             <div className="w-10 h-10 rounded-lg bg-ludo-blue/10 flex items-center justify-center shrink-0">
@@ -115,22 +111,6 @@ export function OnlinePage() {
           </Card>
         </div>
 
-        <div className="mt-6 p-4 rounded-lg bg-surface-2 border border-border">
-          <p className="text-xs text-muted mb-2 font-medium">
-            Have a room code?
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="e.g. ABCD-1234"
-              maxLength={9}
-              className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors font-body uppercase tracking-widest"
-            />
-            <Button variant="primary" size="sm">
-              Join
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
