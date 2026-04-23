@@ -70,7 +70,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify(data),
     });
 
-    if (res.ok) {
+    if (!res.ok) {
       const error = await res.json();
       throw new Error(error.message);
     }

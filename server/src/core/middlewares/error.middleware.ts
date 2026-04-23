@@ -1,6 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import AppError from "../errors/application.error.js";
 
+function handleValidationErrorDB(err: any) {
+  const errors = Object.values(err.errors).map((err) => err);
+  const message = `Invalid input. ${errors.join(". ")}`;
+  return new AppError(message, 400);
+}
+
 function sendErrorDev(err: AppError, res: Response) {
   res.status(err.statusCode).json({
     status: err.status,
@@ -36,6 +42,9 @@ export default (
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = err;
+    if (error.name === "ValidationError")
+      error = handleValidationErrorDB(error);
+
     sendErrorProd(error, res);
   }
 

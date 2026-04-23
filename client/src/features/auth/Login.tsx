@@ -35,10 +35,11 @@ export default function Login() {
           <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted uppercase tracking-widest">
+              <label htmlFor="email" className="text-xs font-medium text-muted uppercase tracking-widest">
                 Email
               </label>
               <input
+                id="email"
                 type="email"
                 placeholder="you@example.com"
                 className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
@@ -48,7 +49,7 @@ export default function Login() {
             {/* Password */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-muted uppercase tracking-widest">
+                <label htmlFor="password" className="text-xs font-medium text-muted uppercase tracking-widest">
                   Password
                 </label>
                 <Link
@@ -59,6 +60,7 @@ export default function Login() {
                 </Link>
               </div>
               <input
+                id="password"
                 type="password"
                 placeholder="••••••••"
                 className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
