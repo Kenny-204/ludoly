@@ -1,6 +1,7 @@
 import { Button } from "../../design-system/Button";
 import { Badge } from "../../design-system/Badge";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ludoColors = [
   { color: "#ef4444", shadow: "rgba(239,68,68,0.4)" },
@@ -10,34 +11,38 @@ const ludoColors = [
 ];
 
 export function HomePage() {
+  const { currentUser } = useAuth();
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12">
-
       <div className="fixed top-4 right-6 z-20 flex items-center gap-2">
-
-        <Link
-          to="/login"
-          className="px-4 py-1.5 rounded-lg text-sm font-medium text-muted hover:text-text transition-colors duration-150"
-        >
-          Sign In
-        </Link>
-        <Link
-          to="/signup"
-          className="px-4 py-1.5 rounded-lg text-sm font-medium border border-border text-text hover:border-muted hover:bg-surface-2 transition-all duration-150"
-        >
-          Sign Up
-        </Link>
-
-        {/* Signed in — hidden until auth is wired up
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
-            <span className="font-display text-sm font-semibold text-bg leading-none">
-              K
+        {!currentUser && (
+          <>
+            <Link
+              to="/login"
+              className="px-4 py-1.5 rounded-lg text-sm font-medium text-muted hover:text-text transition-colors duration-150"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/signup"
+              className="px-4 py-1.5 rounded-lg text-sm font-medium border border-border text-text hover:border-muted hover:bg-surface-2 transition-all duration-150"
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
+        {currentUser && (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <span className="font-display text-sm font-semibold text-bg leading-none">
+                {currentUser.username[0]}
+              </span>
+            </div>
+            <span className="text-sm font-medium text-text">
+              {currentUser.username}
             </span>
           </div>
-          <span className="text-sm font-medium text-text">Kehinde</span>
-        </div>
-        */}
+        )}
       </div>
 
       <div

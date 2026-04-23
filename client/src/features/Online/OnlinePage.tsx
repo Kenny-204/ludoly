@@ -1,7 +1,7 @@
 import { Button } from "../../design-system/Button";
 import { Card } from "../../design-system/Card";
 import { BackButton } from "../../components/BackButton";
-import { useSocket } from "../../contexts/socket";
+// import { useSocket } from "../../contexts/socket";
 
 export function OnlinePage() {
   // const { socket } = useSocket();
