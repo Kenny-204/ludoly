@@ -1,4 +1,3 @@
-import type { Redis } from "ioredis";
 import { stringify } from "querystring";
 import type { Server, Socket } from "socket.io";
 import {
@@ -13,11 +12,12 @@ import type {
   player,
 } from "../core/types/game.t.js";
 import gameReducer from "../application/game/game.reducer.js";
+import type { RedisClient } from "ioredis/built/connectors/SentinelConnector/types.js";
 
 export class WebSocketManager {
   constructor(
     private io: Server,
-    private redisClient: Redis,
+    private redisClient: any,
   ) {
     this.init();
   }

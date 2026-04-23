@@ -12,7 +12,7 @@ export class Jwt {
   }
   public signToken(id: string) {
     return jwt.sign({ id }, this.secret, {
-      expiresIn: config.JWT_EXPIRES_IN as any,
+      expiresIn: config.auth.JWT_EXPIRES_IN as any,
     });
   }
   public async decodeToken(token: string): Promise<AppJwtPayload> {

@@ -12,6 +12,34 @@ const ludoColors = [
 export function HomePage() {
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12">
+
+      <div className="fixed top-4 right-6 z-20 flex items-center gap-2">
+
+        <Link
+          to="/login"
+          className="px-4 py-1.5 rounded-lg text-sm font-medium text-muted hover:text-text transition-colors duration-150"
+        >
+          Sign In
+        </Link>
+        <Link
+          to="/signup"
+          className="px-4 py-1.5 rounded-lg text-sm font-medium border border-border text-text hover:border-muted hover:bg-surface-2 transition-all duration-150"
+        >
+          Sign Up
+        </Link>
+
+        {/* Signed in — hidden until auth is wired up
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+            <span className="font-display text-sm font-semibold text-bg leading-none">
+              K
+            </span>
+          </div>
+          <span className="text-sm font-medium text-text">Kehinde</span>
+        </div>
+        */}
+      </div>
+
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
@@ -46,14 +74,11 @@ export function HomePage() {
         </p>
 
         <div className="w-full max-w-xs space-y-3">
-          <div className="relative">
-            <Button disabled size="lg" fullWidth>
+          <Link to="/online" className="block">
+            <Button variant="primary" size="lg" fullWidth>
               Play Online
             </Button>
-            <span className="absolute -top-2 -right-2">
-              <Badge variant="info">In Progress</Badge>
-            </span>
-          </div>
+          </Link>
 
           <Link to="player-select" className="block">
             <Button variant="secondary" size="lg" fullWidth>

@@ -5,17 +5,24 @@ import AppError from "./core/errors/application.error.js";
 import userRouter from "./application/user/user.router.js";
 import cookieParser from "cookie-parser";
 import { redisClient } from "./core/providers/redis.js";
+import cors from "cors";
 import config from "./core/config/config.js";
 import { WebSocketManager } from "./sockets/ws.server.js";
 
 const app = express();
 
 redisClient.connect();
-// const webSocketManager = new WebSocketManager()
+
 // console.log(redisClient);
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);

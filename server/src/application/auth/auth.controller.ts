@@ -52,7 +52,11 @@ class AuthController {
     });
   };
 
- 
+  public logout = async (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie("jwt");
+    res.status(200).json({ status: "success" });
+  };
+  
 }
 
 export const authController = new AuthController();

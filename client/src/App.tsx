@@ -4,12 +4,26 @@ import { HomePage } from "./features/Home/HomePage.tsx";
 import { OnlinePage } from "./features/Online/OnlinePage.tsx";
 import { PlayerSelectPage } from "./features/PassAndPlay/PlayerSelectPage.tsx";
 import Game from "./features/ludoGame/Game.tsx";
+import SocketProvider from "./contexts/socket.tsx";
+import Login from "./features/auth/Login.tsx";
+import Signup from "./features/auth/Signup.tsx";
+import AuthProvider from "./contexts/AuthContext.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
     errorElement: <div>Error page not found </div>,
   },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+
   {
     path: "/online",
     element: <OnlinePage />,
@@ -19,13 +33,19 @@ const router = createBrowserRouter([
     element: <PlayerSelectPage />,
   },
   {
-    path: "/game-play/",
+    path: "/game-play",
     element: <Game />,
   },
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <SocketProvider>
+        <RouterProvider router={router} />
+      </SocketProvider>
+    </AuthProvider>
+  );
 }
 
 export default App;
