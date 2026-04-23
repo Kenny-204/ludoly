@@ -4,6 +4,7 @@ import { HomePage } from "./features/Home/HomePage.tsx";
 import { OnlinePage } from "./features/Online/OnlinePage.tsx";
 import { CreateRoomPage } from "./features/Online/CreateRoomPage.tsx";
 import { JoinRoomPage } from "./features/Online/JoinRoomPage.tsx";
+import { LobbyPage } from "./features/Online/LobbyPage.tsx";
 import { PlayerSelectPage } from "./features/PassAndPlay/PlayerSelectPage.tsx";
 import Game from "./features/ludoGame/Game.tsx";
 import SocketProvider from "./contexts/socket.tsx";
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: "/online/join",
     element: <JoinRoomPage />,
+  },
+  {
+    path: "/online/lobby/:roomCode",
+    element: <LobbyPage />,
   },
 
   {

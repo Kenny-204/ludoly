@@ -26,14 +26,12 @@ export class WebSocketManager {
     this.io.on("connection", (socket) => {
       console.log("Player connected", socket.id);
 
-      this.io.on("create-room", (data) => this.handleCreateRoom(socket, data));
-      this.io.on("join-room", (data) => this.handleJoinRoom(socket, data));
-      this.io.on("start-game", (data) => this.handleStartGame(socket, data));
-      this.io.on("ready-player", (data) =>
-        this.handlePlayerReady(socket, data),
-      );
-      this.io.on("game-action", (data) => this.handleGameAction(socket, data));
-      this.io.on("disconnect", this.handleDisconnect);
+      socket.on("create-room", (data) => this.handleCreateRoom(socket, data));
+      socket.on("join-room", (data) => this.handleJoinRoom(socket, data));
+      socket.on("start-game", (data) => this.handleStartGame(socket, data));
+      socket.on("ready-player", (data) => this.handlePlayerReady(socket, data));
+      socket.on("game-action", (data) => this.handleGameAction(socket, data));
+      socket.on("disconnect", () => this.handleDisconnect(socket));
     });
   }
 

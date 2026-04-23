@@ -7,14 +7,14 @@ import {
 } from "react";
 import { config } from "../utils/config";
 
-type user = {
-  _id: "string";
+type User = {
+  _id: string;
   email: "string";
   username: "string";
 };
 
 type AuthTypes = {
-  currentUser: user | null;
+  currentUser: User | null;
   signup: (data: {
     email: string;
     password: string;
@@ -49,7 +49,7 @@ async function getUserData() {
   return data.user;
 }
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<user | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(function () {
@@ -57,9 +57,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const user = await getUserData();
         setCurrentUser(user);
-        setLoading(false);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchUser();
