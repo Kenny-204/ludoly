@@ -9,6 +9,8 @@ import Login from "./features/auth/Login.tsx";
 import Signup from "./features/auth/Signup.tsx";
 import AuthProvider from "./contexts/AuthContext.tsx";
 import { Profile } from "./features/Profile/Profile.tsx";
+import PublicOnlyRoute from "./features/auth/PublicOnlyRoute.tsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,13 +18,11 @@ const router = createBrowserRouter([
     errorElement: <div>Error page not found </div>,
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-
-  {
-    path: "/signup",
-    element: <Signup />,
+    element: <PublicOnlyRoute />,
+    children: [
+      { path: "/login", element: <Login /> },
+      { path: "/signup", element: <Signup /> },
+    ],
   },
 
   {
