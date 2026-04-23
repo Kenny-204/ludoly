@@ -3,29 +3,31 @@ import { Button } from "../../design-system/Button";
 import { BackButton } from "../../components/BackButton";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useForm } from "react-hook-form";
+
+type SignupInput = {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+};
 
 export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const { register, watch, handleSubmit, formState: { errors } } = useForm<SignupInput>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [serverError, setServerError] = useState<Error | null>(null);
 
-  async function handleSubmit(e) {
+  async function onSubmit(data: SignupInput) {
     try {
       setLoading(true);
-      setError(null);
-      e.preventDefault();
-      const data = { email, password, username, passwordConfirm };
+      setServerError(null);
       await signup(data);
       navigate("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err);
+        setServerError(err);
         console.log(err.message);
       }
       console.log(err);
@@ -59,19 +61,29 @@ export default function Signup() {
           <p className="text-muted text-sm">Join Ludoly and start playing</p>
         </div>
 
-        {/* Error */}
-        {error && (
+        {/* Server error */}
+        {serverError && (
           <div className="mb-4 flex items-start gap-3 rounded-lg border border-ludo-red/30 bg-ludo-red/10 px-4 py-3">
-            <svg className="w-4 h-4 text-ludo-red mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            <svg
+              className="w-4 h-4 text-ludo-red mt-0.5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
             </svg>
-            <p className="text-sm text-ludo-red">{error.message}</p>
+            <p className="text-sm text-ludo-red">{serverError.message}</p>
           </div>
         )}
 
         {/* Card */}
         <div className="bg-surface border border-border rounded-xl p-6 shadow-card">
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             {/* Username */}
             <div className="space-y-1.5">
               <label
@@ -83,11 +95,20 @@ export default function Signup() {
               <input
                 id="username"
                 type="text"
-                placeholder="e.g. kingkehinde"
-                className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
-                onChange={(e) => setUsername(e.target.value)}
-                value={username}
+                placeholder="e.g. johndoe"
+                className={[
+                  "w-full bg-bg border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none transition-colors",
+                  errors.username ? "border-ludo-red/60" : "border-border focus:border-muted",
+                ].join(" ")}
+                {...register("username", {
+                  required: "Username is required",
+                  minLength: { value: 4, message: "Username should be at least 4 characters" },
+                  maxLength: { value: 24, message: "Username should be at most 24 characters" },
+                })}
               />
+              {errors.username && (
+                <p className="text-xs text-ludo-red mt-1">{errors.username.message}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -102,10 +123,15 @@ export default function Signup() {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
+                className={[
+                  "w-full bg-bg border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none transition-colors",
+                  errors.email ? "border-ludo-red/60" : "border-border focus:border-muted",
+                ].join(" ")}
+                {...register("email", { required: "Email is required" })}
               />
+              {errors.email && (
+                <p className="text-xs text-ludo-red mt-1">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -120,10 +146,18 @@ export default function Signup() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
+                className={[
+                  "w-full bg-bg border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none transition-colors",
+                  errors.password ? "border-ludo-red/60" : "border-border focus:border-muted",
+                ].join(" ")}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 8, message: "Password should have at least 8 characters" },
+                })}
               />
+              {errors.password && (
+                <p className="text-xs text-ludo-red mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -138,10 +172,18 @@ export default function Signup() {
                 id="passwordConfirm"
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none focus:border-muted transition-colors"
-                onChange={(e) => setPasswordConfirm(e.target.value)}
-                value={passwordConfirm}
+                className={[
+                  "w-full bg-bg border rounded-lg px-4 py-2.5 text-sm text-text placeholder:text-muted focus:outline-none transition-colors",
+                  errors.passwordConfirm ? "border-ludo-red/60" : "border-border focus:border-muted",
+                ].join(" ")}
+                {...register("passwordConfirm", {
+                  required: "Please confirm your password",
+                  validate: (value) => value === watch("password") || "Passwords do not match",
+                })}
               />
+              {errors.passwordConfirm && (
+                <p className="text-xs text-ludo-red mt-1">{errors.passwordConfirm.message}</p>
+              )}
             </div>
 
             <div className="pt-2">
@@ -152,7 +194,7 @@ export default function Signup() {
                 type="submit"
                 disabled={loading}
               >
-                Create Account
+                {loading ? "Creating account…" : "Create Account"}
               </Button>
             </div>
           </form>

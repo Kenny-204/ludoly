@@ -76,7 +76,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const responseBody = await res.json();
-    const user = responseBody.user;
+    const user = responseBody.createdUser;
+   
     const newUser = {
       _id: user._id,
       email: user.email,
