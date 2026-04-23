@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Card } from "../../design-system/Card";
 import { BackButton } from "../../components/BackButton";
 import { useSocket } from "../../contexts/socket";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect } from "react";
+import type { gameStateType } from "../../types/game.t";
 
 const playerOptions: { count: 2 | 3 | 4; colors: string[]; label: string }[] = [
   { count: 2, colors: ["#ef4444", "#eab308"], label: "Red vs Yellow" },
@@ -20,7 +21,7 @@ const playerOptions: { count: 2 | 3 | 4; colors: string[]; label: string }[] = [
 ];
 
 export function CreateRoomPage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { socket } = useSocket();
   const { currentUser } = useAuth();
 
@@ -30,9 +31,11 @@ export function CreateRoomPage() {
         return;
       }
 
-      const handleCreateRoom = (data) => {
+      const handleCreateRoom = (data: {
+        roomCode: string;
+        state: gameStateType;
+      }) => {
         console.log(data);
-      
       };
 
       socket.on("room-created", handleCreateRoom);
