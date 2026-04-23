@@ -360,6 +360,7 @@ export function createInitialGameState(numPlayers: number): gameStateType {
   return {
     playing: [],
     numPlayers,
+    roomCode:null,
     currentPlayerId: undefined,
     currentMoveNumber: null,
     currentDieIndex: null,

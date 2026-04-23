@@ -59,8 +59,10 @@ export class WebSocketManager {
     );
     initialGameState.playing.push(playerId);
     initialGameState.currentPlayerId = playerId;
-
+    
     const roomCode = generateRoomCode();
+    initialGameState.roomCode = roomCode
+
 
     await this.redisClient.set(
       `game:${roomCode}`,

@@ -31,6 +31,7 @@ export type actionType =
     };
 
 export type gameStateType = {
+  roomCode: string | null;
   currentPlayerId: string | undefined;
   players: player[];
   numPlayers: number;

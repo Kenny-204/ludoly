@@ -1,5 +1,5 @@
 import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HomePage } from "./features/Home/HomePage.tsx";
 import { OnlinePage } from "./features/Online/OnlinePage.tsx";
 import { CreateRoomPage } from "./features/Online/CreateRoomPage.tsx";
@@ -13,57 +13,33 @@ import Signup from "./features/auth/Signup.tsx";
 import AuthProvider from "./contexts/AuthContext.tsx";
 import { Profile } from "./features/Profile/Profile.tsx";
 import PublicOnlyRoute from "./features/auth/PublicOnlyRoute.tsx";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-    errorElement: <div>Error page not found </div>,
-  },
-  {
-    element: <PublicOnlyRoute />,
-    children: [
-      { path: "/login", element: <Login /> },
-      { path: "/signup", element: <Signup /> },
-    ],
-  },
-
-  {
-    path: "/online",
-    element: <OnlinePage />,
-  },
-  {
-    path: "/online/create",
-    element: <CreateRoomPage />,
-  },
-  {
-    path: "/online/join",
-    element: <JoinRoomPage />,
-  },
-  {
-    path: "/online/lobby/:roomCode",
-    element: <LobbyPage />,
-  },
-
-  {
-    path: "/profile",
-    element: <Profile />,
-  },
-  {
-    path: "/player-select",
-    element: <PlayerSelectPage />,
-  },
-  {
-    path: "/game-play",
-    element: <Game />,
-  },
-]);
+import GameStateProvider from "./contexts/GameStateContext.tsx";
 
 function App() {
   return (
     <AuthProvider>
       <SocketProvider>
-        <RouterProvider router={router} />
+        <BrowserRouter>
+          <GameStateProvider>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+
+              <Route element={<PublicOnlyRoute />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+              </Route>
+
+              <Route path="/online" element={<OnlinePage />} />
+              <Route path="/online/create" element={<CreateRoomPage />} />
+              <Route path="/online/join" element={<JoinRoomPage />} />
+              <Route path="/online/lobby" element={<LobbyPage />} />
+
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/player-select" element={<PlayerSelectPage />} />
+              <Route path="/game-play" element={<Game />} />
+            </Routes>
+          </GameStateProvider>
+        </BrowserRouter>
       </SocketProvider>
     </AuthProvider>
   );
