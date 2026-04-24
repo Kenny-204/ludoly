@@ -2,6 +2,7 @@ import { BackButton } from "../../components/BackButton";
 import { Button } from "../../design-system/Button";
 import { useGameState } from "../../contexts/GameStateContext";
 import { CrownIcon, CopyIcon } from "./components/Icons";
+import { useSocket } from "../../contexts/socket";
 
 const playerColorMap: Record<
   string,
@@ -13,26 +14,30 @@ const playerColorMap: Record<
   yellow: { hex: "#eab308", glow: "rgba(234,179,8,0.4)", label: "Yellow" },
 };
 
-const slotColors = ["red", "green", "blue", "yellow"];
-
 export function LobbyPage() {
-  const { gameState, playerId } = useGameState();
+  const { gameState, playerId, error } = useGameState();
+  const { socket } = useSocket();
 
   if (!gameState) {
     return <>loading...</>;
   }
-  const { roomCode, numPlayers: totalSlots, players } = gameState;
 
+  const { roomCode, numPlayers: totalSlots, players } = gameState;
+  
   const host = players[0];
   const currentPlayer = players.find((player) => player.id === playerId);
   let isHost = false;
 
   const allReady = players.every((player) => player.isReady === true);
-
   if (playerId === host.id) {
     isHost = true;
   }
   const filledCount = players.length;
+
+  function handlePlayerReady() {
+    console.log(playerId);
+    socket?.emit("ready-player", { roomCode, playerId });
+  }
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12">
@@ -89,71 +94,66 @@ export function LobbyPage() {
           </div>
 
           <div className="space-y-2.5">
-            {slotColors.slice(0, totalSlots).map((colorKey) => {
-              const colorMeta = playerColorMap[colorKey];
-              const player = players.find((p) => p.color === colorKey);
-              const isEmpty = !player;
-
-              return (
+            {players.map((player) => (
+              <div
+                key={player.id}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 border border-border bg-surface-2 transition-colors"
+              >
                 <div
-                  key={colorKey}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 border transition-colors ${
-                    isEmpty
-                      ? "border-border/50 bg-bg/40 opacity-50"
-                      : "border-border bg-surface-2"
-                  }`}
-                >
-                  {/* Color dot */}
-                  <div
-                    className="w-4 h-4 rounded-full shrink-0 border border-white/10"
-                    style={{
-                      backgroundColor: colorMeta.hex,
-                      boxShadow: isEmpty
-                        ? "none"
-                        : `0 0 10px 0 ${colorMeta.glow}`,
-                    }}
-                  />
-
-                  {/* Name / waiting */}
-                  <span
-                    className={`flex-1 font-display text-sm ${
-                      isEmpty ? "text-muted italic" : "text-text"
-                    }`}
-                  >
-                    {isEmpty ? "Waiting…" : player.username}
-                  </span>
-
-                  {/* Badges */}
-                  {!isEmpty && (
-                    <div className="flex items-center gap-2">
-                      {player.id === host.id && (
-                        <span className="flex items-center gap-1 text-xs text-accent font-medium">
-                          <CrownIcon />
-                          Host
-                        </span>
-                      )}
-                      {!(player.id === host.id) && (
-                        <span
-                          className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
-                            player.isReady
-                              ? "text-green-400 border-green-400/30 bg-green-400/10"
-                              : "text-muted border-border"
-                          }`}
-                        >
-                          {player.isReady ? "Ready" : "Not Ready"}
-                        </span>
-                      )}
-                    </div>
+                  className="w-4 h-4 rounded-full shrink-0 border border-white/10"
+                  style={{
+                    backgroundColor: playerColorMap[player.color]?.hex,
+                    boxShadow: `0 0 10px 0 ${playerColorMap[player.color]?.glow}`,
+                  }}
+                />
+                <span className="flex-1 font-display text-sm text-text">
+                  {player.username}
+                </span>
+                <div className="flex items-center gap-2">
+                  {player.id === host.id ? (
+                    <span className="flex items-center gap-1 text-xs text-accent font-medium">
+                      <CrownIcon />
+                      Host
+                    </span>
+                  ) : (
+                    <span
+                      className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
+                        player.isReady
+                          ? "text-green-400 border-green-400/30 bg-green-400/10"
+                          : "text-muted border-border"
+                      }`}
+                    >
+                      {player.isReady ? "Ready" : "Not Ready"}
+                    </span>
                   )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
+
+            {Array.from({ length: totalSlots - filledCount }).map((_, i) => (
+              <div
+                key={`empty-${i}`}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 border border-border/50 bg-bg/40 opacity-50"
+              >
+                <div className="w-4 h-4 rounded-full shrink-0 bg-border" />
+                <span className="flex-1 font-display text-sm text-muted italic">
+                  Waiting…
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-body">
+            {error}
+          </div>
+        )}
+
         {/* Action button */}
         {isHost ? (
-          allReady ? (
+          allReady && filledCount === totalSlots ? (
             <Button variant="primary" size="md" fullWidth onClick={() => {}}>
               Start Game
             </Button>
@@ -167,7 +167,7 @@ export function LobbyPage() {
             variant={currentPlayer?.isReady ? "secondary" : "primary"}
             size="md"
             fullWidth
-            onClick={() => {}}
+            onClick={handlePlayerReady}
           >
             {currentPlayer?.isReady ? "Not Ready" : "Ready"}
           </Button>

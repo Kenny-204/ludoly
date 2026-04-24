@@ -101,6 +101,7 @@ export class WebSocketManager {
         playerIndex: totalNumberOfPlayers === 2 ? 3 : currentNumberOfPlayers,
       }),
     );
+    currentGameState.playing.push(playerId);
 
     await this.redisClient.set(
       `game:${roomCode}`,

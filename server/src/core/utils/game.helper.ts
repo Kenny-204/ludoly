@@ -320,9 +320,9 @@ export class PlayerClass implements player {
     playerIndex: number;
   }) {
     this.username = data.username;
-    this.isReady = false;
     this.id = data.playerId;
     this.playerIndex = data.playerIndex;
+    this.isReady = this.playerIndex === 0 ? true : false;
     this.color = data.color;
     this.state = "IDLE";
     this.score = 0;
