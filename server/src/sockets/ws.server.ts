@@ -45,24 +45,24 @@ export class WebSocketManager {
 
   private async handleCreateRoom(
     socket: Socket,
-    data: { playerId: string; numPlayers: number },
+    data: { playerId: string; username: string; numPlayers: number },
   ) {
-    const { playerId, numPlayers } = data;
+    const { playerId, numPlayers, username } = data;
     const initialGameState = createInitialGameState(numPlayers);
     const currentNumberOfPlayers = initialGameState.players.length;
     initialGameState.players.push(
       new PlayerClass({
         playerId,
+        username,
         color: getPlayerColor(currentNumberOfPlayers + 1),
         playerIndex: currentNumberOfPlayers,
       }),
     );
     initialGameState.playing.push(playerId);
     initialGameState.currentPlayerId = playerId;
-    
-    const roomCode = generateRoomCode();
-    initialGameState.roomCode = roomCode
 
+    const roomCode = generateRoomCode();
+    initialGameState.roomCode = roomCode;
 
     await this.redisClient.set(
       `game:${roomCode}`,
@@ -75,9 +75,9 @@ export class WebSocketManager {
 
   private async handleJoinRoom(
     socket: Socket,
-    data: { playerId: string; roomCode: string },
+    data: { playerId: string; username: string; roomCode: string },
   ) {
-    const { playerId, roomCode } = data;
+    const { playerId, roomCode, username } = data;
 
     if (!(await this.redisClient.exists(`game:${roomCode}`))) {
       socket.emit("error", { message: "This room does not exist" });
@@ -96,6 +96,7 @@ export class WebSocketManager {
     currentGameState.players.push(
       new PlayerClass({
         playerId,
+        username,
         color: getPlayerColor(currentNumberOfPlayers + 1),
         playerIndex: totalNumberOfPlayers === 2 ? 3 : currentNumberOfPlayers,
       }),

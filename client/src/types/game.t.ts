@@ -15,6 +15,7 @@ export type piece = {
 export type player = {
   id: string;
   color: string;
+  username: string;
   state: playerState;
   playerIndex: number;
   isReady: boolean;

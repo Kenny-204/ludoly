@@ -311,8 +311,15 @@ export class PlayerClass implements player {
   public playerIndex: number;
   public isReady: boolean;
   public pieces: PieceClass[];
+  public username: string;
 
-  constructor(data: { playerId: string; color: color; playerIndex: number }) {
+  constructor(data: {
+    playerId: string;
+    username: string;
+    color: color;
+    playerIndex: number;
+  }) {
+    this.username = data.username;
     this.isReady = false;
     this.id = data.playerId;
     this.playerIndex = data.playerIndex;
@@ -360,7 +367,7 @@ export function createInitialGameState(numPlayers: number): gameStateType {
   return {
     playing: [],
     numPlayers,
-    roomCode:null,
+    roomCode: null,
     currentPlayerId: undefined,
     currentMoveNumber: null,
     currentDieIndex: null,

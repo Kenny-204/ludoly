@@ -3,8 +3,7 @@ import { Card } from "../../design-system/Card";
 import { BackButton } from "../../components/BackButton";
 import { useSocket } from "../../contexts/socket";
 import { useAuth } from "../../contexts/AuthContext";
-import { useEffect } from "react";
-import type { gameStateType } from "../../types/game.t";
+import { useGameState } from "../../contexts/GameStateContext";
 
 const playerOptions: { count: 2 | 3 | 4; colors: string[]; label: string }[] = [
   { count: 2, colors: ["#ef4444", "#eab308"], label: "Red vs Yellow" },
@@ -24,33 +23,14 @@ export function CreateRoomPage() {
   // const navigate = useNavigate();
   const { socket } = useSocket();
   const { currentUser } = useAuth();
+  const { setPlayerId } = useGameState();
 
-  useEffect(
-    function () {
-      if (!socket) {
-        return;
-      }
-
-      const handleCreateRoom = (data: {
-        roomCode: string;
-        state: gameStateType;
-      }) => {
-        console.log(data);
-      };
-
-      socket.on("room-created", handleCreateRoom);
-
-      return () => {
-        socket.off("room-created", handleCreateRoom);
-      };
-    },
-    [socket],
-  );
   const playerId = currentUser?._id || crypto.randomUUID();
+  const username = currentUser?.username || "Guest";
 
   function handleCreateRoom(numPlayers: number) {
-    console.log("clicked", socket);
-    socket?.emit("create-room", { playerId, numPlayers });
+    setPlayerId(playerId);
+    socket?.emit("create-room", { playerId, username, numPlayers });
   }
 
   return (

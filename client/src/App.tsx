@@ -33,7 +33,7 @@ function App() {
               <Route path="/online/create" element={<CreateRoomPage />} />
               <Route path="/online/join" element={<JoinRoomPage />} />
               <Route path="/online/lobby" element={<LobbyPage />} />
-
+    
               <Route path="/profile" element={<Profile />} />
               <Route path="/player-select" element={<PlayerSelectPage />} />
               <Route path="/game-play" element={<Game />} />

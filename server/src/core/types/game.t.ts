@@ -14,6 +14,7 @@ export type piece = {
 
 export type player = {
   id: string;
+  username: string;
   color: string;
   state: playerState;
   playerIndex: number;

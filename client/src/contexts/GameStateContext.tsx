@@ -3,12 +3,18 @@ import type { gameStateType } from "../types/game.t";
 import { useSocket } from "./socket";
 import { useNavigate } from "react-router-dom";
 
-const gameStateContext = createContext<gameStateType | null>(null);
+type GameStateContextType = {
+  setPlayerId: React.Dispatch<React.SetStateAction<string>>;
+  gameState: gameStateType | null;
+  playerId: string;
+};
+
+const gameStateContext = createContext<GameStateContextType | null>(null);
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useGameState() {
   const context = useContext(gameStateContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("Game context used outside of provider");
   }
   return context;
@@ -23,6 +29,7 @@ export default function GameStateProvider({
   const navigate = useNavigate();
 
   const [gameState, setGameState] = useState<gameStateType | null>(null);
+  const [playerId, setPlayerId] = useState<string>("");
 
   useEffect(
     function () {
@@ -44,9 +51,13 @@ export default function GameStateProvider({
     },
     [socket, navigate],
   );
-
+  const value = {
+    setPlayerId,
+    gameState,
+    playerId,
+  };
   return (
-    <gameStateContext.Provider value={gameState}>
+    <gameStateContext.Provider value={value}>
       {children}
     </gameStateContext.Provider>
   );

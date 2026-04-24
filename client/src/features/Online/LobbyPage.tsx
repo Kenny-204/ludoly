@@ -1,6 +1,7 @@
 import { BackButton } from "../../components/BackButton";
 import { Button } from "../../design-system/Button";
 import { useGameState } from "../../contexts/GameStateContext";
+import { CrownIcon, CopyIcon } from "./components/Icons";
 
 const playerColorMap: Record<
   string,
@@ -14,61 +15,24 @@ const playerColorMap: Record<
 
 const slotColors = ["red", "green", "blue", "yellow"];
 
-// --- mock data for UI preview ---
-const mockPlayers = [
-  { id: "1", username: "Kehinde", color: "red", isHost: true, isReady: true },
-  { id: "2", username: "Amara", color: "green", isHost: false, isReady: true },
-  { id: "3", username: "Tunde", color: "blue", isHost: false, isReady: false },
-];
-const mockIsHost = true;
-const mockIsReady = false;
-// --- end mock data ---
-
-function CrownIcon() {
-  return (
-    <svg
-      className="w-3.5 h-3.5 text-accent"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
-      <path d="M2 19h20v2H2v-2zM2 7l5 5 5-7 5 7 5-5-2 10H4L2 7z" />
-    </svg>
-  );
-}
-
-function CopyIcon() {
-  return (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <rect
-        x="9"
-        y="9"
-        width="13"
-        height="13"
-        rx="2"
-        ry="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-      />
-    </svg>
-  );
-}
-
 export function LobbyPage() {
-  const { roomCode, numPlayers: totalSlots, players } = useGameState();
+  const { gameState, playerId } = useGameState();
 
+  if (!gameState) {
+    return <>loading...</>;
+  }
+  const { roomCode, numPlayers: totalSlots, players } = gameState;
+
+  const host = players[0];
+  const currentPlayer = players.find((player) => player.id === playerId);
+  let isHost = false;
+
+  const allReady = players.every((player) => player.isReady === true);
+
+  if (playerId === host.id) {
+    isHost = true;
+  }
   const filledCount = players.length;
-  // const totalSlots = mockTotalSlots;
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12">
@@ -127,7 +91,7 @@ export function LobbyPage() {
           <div className="space-y-2.5">
             {slotColors.slice(0, totalSlots).map((colorKey) => {
               const colorMeta = playerColorMap[colorKey];
-              const player = mockPlayers.find((p) => p.color === colorKey);
+              const player = players.find((p) => p.color === colorKey);
               const isEmpty = !player;
 
               return (
@@ -162,13 +126,13 @@ export function LobbyPage() {
                   {/* Badges */}
                   {!isEmpty && (
                     <div className="flex items-center gap-2">
-                      {player.isHost && (
+                      {player.id === host.id && (
                         <span className="flex items-center gap-1 text-xs text-accent font-medium">
                           <CrownIcon />
                           Host
                         </span>
                       )}
-                      {!player.isHost && (
+                      {!(player.id === host.id) && (
                         <span
                           className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
                             player.isReady
@@ -188,18 +152,24 @@ export function LobbyPage() {
         </div>
 
         {/* Action button */}
-        {mockIsHost ? (
-          <Button variant="primary" size="md" fullWidth onClick={() => {}}>
-            Start Game
-          </Button>
+        {isHost ? (
+          allReady ? (
+            <Button variant="primary" size="md" fullWidth onClick={() => {}}>
+              Start Game
+            </Button>
+          ) : (
+            <p className="text-center text-sm text-muted font-body">
+              Waiting for everyone to ready up…
+            </p>
+          )
         ) : (
           <Button
-            variant={mockIsReady ? "secondary" : "primary"}
+            variant={currentPlayer?.isReady ? "secondary" : "primary"}
             size="md"
             fullWidth
             onClick={() => {}}
           >
-            {mockIsReady ? "Not Ready" : "Ready"}
+            {currentPlayer?.isReady ? "Not Ready" : "Ready"}
           </Button>
         )}
       </div>
