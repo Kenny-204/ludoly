@@ -14,6 +14,7 @@ import AuthProvider from "./contexts/AuthContext.tsx";
 import { Profile } from "./features/Profile/Profile.tsx";
 import PublicOnlyRoute from "./features/auth/PublicOnlyRoute.tsx";
 import GameStateProvider from "./contexts/GameStateContext.tsx";
+import OnlineGame from "./features/Online/OnlineGame.tsx";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/online/create" element={<CreateRoomPage />} />
               <Route path="/online/join" element={<JoinRoomPage />} />
               <Route path="/online/lobby" element={<LobbyPage />} />
+              <Route path="/online/game" element={<OnlineGame />} />
     
               <Route path="/profile" element={<Profile />} />
               <Route path="/player-select" element={<PlayerSelectPage />} />

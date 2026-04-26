@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import type { gameStateType } from "../types/game.t";
+import type { gameStateType, player } from "../types/game.t";
 import { useSocket } from "./socket";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +15,7 @@ type GameStateContextType = {
   gameState: gameStateType | null;
   playerId: string;
   error: string;
+  currentPlayer: player | undefined;
 };
 
 const gameStateContext = createContext<GameStateContextType | null>(null);
@@ -77,7 +78,11 @@ export default function GameStateProvider({
         updateGameLocally(data.state);
         navigate("/online/lobby");
       };
-
+      const handleStartGame = (state: gameStateType) => {
+        setGameState(state);
+        updateGameLocally(state);
+        navigate("/online/game");
+      };
       const handleStateSync = (state: gameStateType) => {
         setGameState(state);
         updateGameLocally(state);
@@ -90,24 +95,32 @@ export default function GameStateProvider({
 
       socket.on("room-created", handleCreatedRoom);
       socket.on("player-joined", handleJoinedRoom);
+      socket.on("start-game", handleStartGame);
       socket.on("state", handleStateSync);
       socket.on("error", handleError);
 
       return () => {
         socket.off("room-created", handleCreatedRoom);
         socket.off("player-joined", handleJoinedRoom);
+        socket.off("start-game", handleStartGame);
         socket.off("state", handleStateSync);
         socket.off("error", handleError);
       };
     },
     [socket, navigate, updateGameLocally],
   );
+
+  const currentPlayer = gameState?.players.find(
+    (player) => player.id === playerId,
+  );
+
   const value = {
     setPlayerId,
     setError,
     gameState,
     playerId,
     error,
+    currentPlayer,
   };
   return (
     <gameStateContext.Provider value={value}>

@@ -3,6 +3,7 @@ import { Button } from "../../design-system/Button";
 import { useGameState } from "../../contexts/GameStateContext";
 import { CrownIcon, CopyIcon } from "./components/Icons";
 import { useSocket } from "../../contexts/socket";
+import { useNavigate } from "react-router-dom";
 
 const playerColorMap: Record<
   string,
@@ -15,17 +16,17 @@ const playerColorMap: Record<
 };
 
 export function LobbyPage() {
-  const { gameState, playerId, error } = useGameState();
+  const { gameState, playerId, error ,currentPlayer} = useGameState();
   const { socket } = useSocket();
+  const navigate = useNavigate()
 
   if (!gameState) {
     return <>loading...</>;
   }
 
-  const { roomCode, numPlayers: totalSlots, players } = gameState;
-  
+  const { roomCode, numPlayers: totalSlots, players, } = gameState;
+
   const host = players[0];
-  const currentPlayer = players.find((player) => player.id === playerId);
   let isHost = false;
 
   const allReady = players.every((player) => player.isReady === true);
@@ -37,6 +38,11 @@ export function LobbyPage() {
   function handlePlayerReady() {
     console.log(playerId);
     socket?.emit("ready-player", { roomCode, playerId });
+  }
+
+  function handleStartGame() {
+    socket?.emit("start-game", { roomCode });
+    navigate('/online/game')
   }
 
   return (
@@ -154,7 +160,12 @@ export function LobbyPage() {
         {/* Action button */}
         {isHost ? (
           allReady && filledCount === totalSlots ? (
-            <Button variant="primary" size="md" fullWidth onClick={() => {}}>
+            <Button
+              variant="primary"
+              size="md"
+              fullWidth
+              onClick={handleStartGame}
+            >
               Start Game
             </Button>
           ) : (

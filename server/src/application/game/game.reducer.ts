@@ -48,7 +48,10 @@ type gameStateType = {
   gamePhase: "WAITING" | "ROLLING";
 };
 
-export default function gameReducer(state: gameStateType, action: actionType): gameStateType {
+export default function gameReducer(
+  state: gameStateType,
+  action: actionType,
+): gameStateType {
   switch (action.type) {
     case "ROLL_DICE": {
       const currentPlayer = state.players.find(
@@ -137,13 +140,13 @@ export default function gameReducer(state: gameStateType, action: actionType): g
       // (where the piece is suppposed to go)
       const newPosition =
         currentPiece.state === "HOME"
-          ? getStartPosition(currentPlayer.playerNumber)
+          ? getStartPosition(currentPlayer.playerIndex)
           : currentPiece.distance + state.currentMoveNumber! === 56
             ? 100
             : getNextPosition(
                 currentPiece.position,
                 currentPiece.distance,
-                currentPlayer.playerNumber,
+                currentPlayer.playerIndex,
                 state.currentMoveNumber!,
               );
       // (check if it's in the home stretch)

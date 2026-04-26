@@ -261,40 +261,28 @@ export function isPiecePlayable(
   gamePhase: "WAITING" | "ROLLING",
 ): boolean {
   if (gamePhase === "WAITING") {
-    console.log("It happened because the game phase was waiting");
     return false;
   }
   if (!dice || playerId !== currentPiece.ownerId) {
-    console.log(
-      "It happened because there was no dice or the player id was not equal to the current piece",
-    );
     return false;
   }
   if (currentPiece.state === "FINISHED") {
-    console.log("It happened because the piece was finished");
     return false;
   }
 
   const diceValues = Array.isArray(dice) ? dice : [dice];
   return diceValues.some((d, i) => {
     if (d <= 0) {
-      console.log("It happened because thedie was -");
       return false;
     }
     if (currentPiece.state === "BOARD") {
       if (currentPiece.distance + d > 56) {
-        console.log(
-          "It happened because the it would have made the distance more than 56",
-        );
         return false;
       }
       return d && true;
     } else if (currentPiece.state === "HOME") return i < 2 && d === 6;
     else if (currentPiece.state === "HOME_STRETCH") {
       if (currentPiece.distance + d > 56) {
-        console.log(
-          "It happened because the distance would have been more than 56",
-        );
         return false;
       }
 
@@ -332,11 +320,11 @@ export class PlayerClass implements player {
       (_, i) =>
         new PieceClass(
           `${this.id}-${i}`,
-          data.playerIndex == 1
+          data.playerIndex == 0
             ? i + 1
-            : data.playerIndex === 2
+            : data.playerIndex === 1
               ? i + 5
-              : data.playerIndex === 3
+              : data.playerIndex === 2
                 ? i + 9
                 : i + 13,
           this.id,

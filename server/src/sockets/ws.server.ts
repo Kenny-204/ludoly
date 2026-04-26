@@ -30,6 +30,7 @@ export class WebSocketManager {
       socket.on("join-room", (data) => this.handleJoinRoom(socket, data));
       socket.on("start-game", (data) => this.handleStartGame(socket, data));
       socket.on("ready-player", (data) => this.handlePlayerReady(socket, data));
+      socket.on("rejoin-game", (data) => this.handleRejoinGame(socket, data));
       socket.on("game-action", (data) => this.handleGameAction(socket, data));
       socket.on("disconnect", () => this.handleDisconnect(socket));
     });
@@ -137,7 +138,7 @@ export class WebSocketManager {
       JSON.stringify(currentGameState),
     );
 
-    this.io.to(roomCode).emit("state", currentGameState);
+    this.io.to(roomCode).emit("start-game", currentGameState);
   }
   private async handlePlayerReady(
     socket: Socket,
@@ -181,6 +182,19 @@ export class WebSocketManager {
 
     this.io.to(roomCode).emit("state", newState);
   }
+
+  private async handleRejoinGame(
+    socket: Socket,
+    data: { roomCode: string; playerId: string },
+  ) {
+    const { roomCode, playerId } = data;
+    const currentGameState = await this.getGameState(socket, roomCode);
+    if (!currentGameState) return;
+
+    socket.join(roomCode);
+    socket.emit("state", currentGameState);
+  }
+
   private handleDisconnect(socket: Socket) {
     socket.rooms.forEach((room) => {
       if (room !== socket.id) {
