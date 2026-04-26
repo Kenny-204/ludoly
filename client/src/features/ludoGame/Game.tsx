@@ -7,6 +7,7 @@ import {
   getInitialPosition,
 } from "../../utils/board";
 import { useSearchParams } from "react-router-dom";
+import { WinnerModal } from "./WinnerModal";
 
 // ── Style-only constants ────────────────────────────────────────
 const playerColorMap: Record<string, { glow: string; hex: string }> = {
@@ -55,6 +56,7 @@ type gameStateType = {
   rolledDoubleSix: boolean;
   currentMoveNumber: number | null;
   playing: string[];
+  state: "FINISHED" | "IN_PROGRESS";
   currentDieIndex: number | null;
   gamePhase: "WAITING" | "ROLLING";
 };
@@ -270,6 +272,7 @@ const initialState = function (numPlayers: number): gameStateType {
       },
     ],
     playing,
+    state: "IN_PROGRESS",
     currentPlayerId: playing[0],
     currentMoveNumber: null,
     currentDieIndex: null,
@@ -309,6 +312,7 @@ function getNextPosition(
   } else return (currentPosition + currentMoveNumber) % totalPosition;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function isPiecePlayable(
   currentPiece: piece,
   dice: number | number[] | null,
@@ -549,6 +553,14 @@ function reducer(state: gameStateType, action: actionType): gameStateType {
           ? false
           : state.rolledDoubleSix;
 
+      const winner = newPlayers.find((player) => player.score === 4);
+      if (winner) {
+        return {
+          ...state,
+          players: newPlayers,
+          state: "FINISHED",
+        };
+      }
       // const hasPlayerFinishedPlaying =
       //   state.rollResult[0] == 0 ||
       //   state.rollResult[1] == 0 ||
@@ -588,6 +600,7 @@ function Game() {
       currentMoveNumber,
       currentPlayerId,
       gamePhase,
+      state,
     },
     dispatch,
   ] = useReducer(reducer, initialState(+numPlayers));
@@ -632,6 +645,7 @@ function Game() {
   }
   return (
     <div className="min-h-screen bg-bg text-text flex items-center justify-center gap-6 p-6">
+      {state === "FINISHED" && <WinnerModal players={players} />}
       {/* ── Left Panel ── */}
       <div className="w-52 shrink-0 flex flex-col gap-4">
         {/* Current player */}
