@@ -17,7 +17,7 @@ export class Jwt {
   }
   public async decodeToken(token: string): Promise<AppJwtPayload> {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, this.secret, (err, decoded) => {
+      jwt.verify(token, this.secret, (err: any, decoded: any) => {
         if (err) return reject(err);
         resolve(decoded as AppJwtPayload);
       });

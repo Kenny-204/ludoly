@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import globalErrorHandler from "./core/middlewares/error.middleware.js";
 import authRouter from "./application/auth/auth.router.js";
 import AppError from "./core/errors/application.error.js";
@@ -27,7 +27,7 @@ app.use(
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 
-app.use("/{*any}", function (req, res, next) {
+app.use("/{*any}", function (req:Request, res:Response, next:NextFunction) {
   next(new AppError(`Can't find ${req.originalUrl} on this server.`, 404));
 });
 app.use(globalErrorHandler);
