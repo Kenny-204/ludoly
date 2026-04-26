@@ -25,7 +25,7 @@ export default function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(function () {
-    const newSocket = io("https://ludoly.onrender.com:3000");
+    const newSocket = io("https://ludoly.onrender.com");
     newSocket.on("connect", () => setSocket(newSocket));
 
     return () => {
