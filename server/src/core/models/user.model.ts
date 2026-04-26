@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await hashManager.hashPassword(this.password);
+  // @ts-ignore
   this.passwordConfirm = undefined;
 });
 
