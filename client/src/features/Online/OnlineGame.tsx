@@ -9,7 +9,7 @@ import {
 import { useGameState } from "../../contexts/GameStateContext";
 import { useSocket } from "../../contexts/socket";
 import type { actionType } from "../../types/game.t";
-import { isPiecePlayable } from "../ludoGame/Game";
+import { isPiecePlayable } from "../ludoGame/utils/helpers";
 
 // ── Style-only constants ────────────────────────────────────────
 const playerColorMap: Record<string, { glow: string; hex: string }> = {
