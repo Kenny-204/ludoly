@@ -18,5 +18,6 @@ const io = new Server(httpServer, {
 
 const webSocketManager = new WebSocketManager(io, redisClient);
 httpServer.listen(config.app.port, () =>
-  console.log("server running on port ", config.app.port),
+  
+  console.log("server running on port ", config.app.port,config.db.db_string),
 );
