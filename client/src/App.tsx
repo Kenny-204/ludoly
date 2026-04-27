@@ -29,13 +29,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
               </Route>
-
-              <Route path="/online" element={<OnlinePage />} />
-              <Route path="/online/create" element={<CreateRoomPage />} />
-              <Route path="/online/join" element={<JoinRoomPage />} />
-              <Route path="/online/lobby" element={<LobbyPage />} />
-              <Route path="/online/game" element={<OnlineGame />} />
-    
+              <Route path="/online" element={<OnlinePage />}>
+                <Route path="/create" element={<CreateRoomPage />} />
+                <Route path="/join" element={<JoinRoomPage />} />
+                <Route path="/lobby" element={<LobbyPage />} />
+                <Route path="/game" element={<OnlineGame />} />
+              </Route>
               <Route path="/profile" element={<Profile />} />
               <Route path="/player-select" element={<PlayerSelectPage />} />
               <Route path="/game-play" element={<Game />} />
