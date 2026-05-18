@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { config } from "../utils/config";
+import LoadingScreen from "../components/LoadingScreen";
 
 type User = {
   _id: string;
@@ -137,10 +138,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: currentUser !== null,
     logout,
   };
+  if (loading) return <LoadingScreen />;
+
   return (
     <authContext.Provider value={value}>
-      {" "}
-      {!loading && children}
+      {children}
     </authContext.Provider>
   );
 }
